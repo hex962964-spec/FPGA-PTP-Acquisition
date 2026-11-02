@@ -1,0 +1,34 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
+| Date         : Tue Oct 27 18:32:28 2026
+| Host         : xiaohe running 64-bit major release  (build 9200)
+| Command      : report_clock_interaction -file D:/111.wenjian/5.fpgatest2/work/timing_closure_1/build_4/clock_interaction.rpt
+| Design       : soc_top
+| Device       : 7a200t-fbg484
+| Speed File   : -2  PRODUCTION 1.23 2018-06-13
+| Design State : Physopt postRoute
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Clock Interaction Report
+
+Clock Interaction Table
+-----------------------
+
+                                              WNS                            TNS Failing  TNS Total    WNS Path         Clock-Pair           Inter-Clock              
+From Clock             To Clock               Clock Edges  WNS(ns)  TNS(ns)    Endpoints    Endpoints  Requirement(ns)  Classification       Constraints              
+---------------------  ---------------------  -----------  -------  -------  -----------  -----------  ---------------  -------------------  -----------------------  
+clk_out1_rgmii_rx_pll  clk_out1_rgmii_rx_pll  rise - rise     0.54     0.00            0         6478             8.00  Clean                Timed                    
+clk_out1_rgmii_rx_pll  eth_clk_clk_pll        rise - rise     2.39     0.00            0            3             6.00  No Common Clock      Timed (unsafe)           
+clk_out1_rgmii_rx_pll  sys_clk_clk_pll        rise - rise     0.28     0.00            0           76             2.00  No Common Clock      Timed (unsafe)           
+cpu_clk_clk_pll        cpu_clk_clk_pll        rise - rise     3.12     0.00            0        21377            30.40  Clean                Timed                    
+cpu_clk_clk_pll        sys_clk_clk_pll        rise - rise    17.85     0.00            0          204            20.00  Ignored              Max Delay Datapath Only  
+eth_clk_clk_pll        clk_out1_rgmii_rx_pll  rise - rise     0.35     0.00            0          294             2.00  No Common Clock      Timed (unsafe)           
+eth_clk_clk_pll        eth_clk_clk_pll        rise - rise     0.04     0.00            0        23696             8.00  Clean                Timed                    
+eth_clk_clk_pll        sys_clk_clk_pll        rise - rise     1.30     0.00            0         1152             4.00  Clean                Timed                    
+sys_clk_clk_pll        clk_out1_rgmii_rx_pll  rise - rise     5.71     0.00            0          180             8.00  Ignored              Max Delay Datapath Only  
+sys_clk_clk_pll        cpu_clk_clk_pll        rise - rise    17.82     0.00            0          144            20.00  Ignored              Max Delay Datapath Only  
+sys_clk_clk_pll        eth_clk_clk_pll        rise - rise     1.25     0.00            0          827             4.00  Clean                Timed                    
+sys_clk_clk_pll        sys_clk_clk_pll        rise - rise     2.04     0.00            0        45924            20.00  Clean                Timed                    
+
+

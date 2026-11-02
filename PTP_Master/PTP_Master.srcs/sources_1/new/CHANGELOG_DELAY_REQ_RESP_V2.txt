@@ -1,0 +1,95 @@
+Observer FPGA RTL · Delay_Req Parser + Delay_Resp TX 修改日志
+Version: observer-delay-req-resp-v2
+Date: 2026-05-24
+
+一、修改目标
+1. 在 Observer FPGA Foundation-v1 / PTP Master TX Path 基础上补齐 Stage 1：
+   - RX 域解析 DUT 发来的 PTPv2 Delay_Req；
+   - 通过单记录 req/ack CDC 将 Delay_Req record 从 eth_rx_clk_90 送到 eth_tx_clk；
+   - TX 域生成 UDP/320 Delay_Resp，携带 t4 receiveTimestamp 与 DUT requestingPortIdentity；
+   - TX mux 优先级调整为 Delay_Resp > Sync/Follow_Up > debug/test frame；
+   - UART STAT 行增加 Delay_Req / Delay_Resp bring-up 计数。
+2. 本版本仍不包含 DUT acquisition packet parser、OBS_RXD、TSN slot monitor；它们属于后续 Stage 2/3。
+
+二、新增/补齐的 RTL 文件
+1. new/ptp/observer_ptp_delay_req_rx.v
+   - RX-domain Delay_Req parser。
+   - 输入为 observer_axis_mac_rx 输出的 frame-body byte stream 与 SFD timestamp。
+   - 识别 Ethernet II + IPv4(IHL=5) + UDP/319 + PTPv2 Delay_Req。
+   - 支持目的 MAC 为 LOCAL_MAC、PTP multicast MAC 或 broadcast MAC。
+   - 支持目的 IP 为 LOCAL_IP 或 PTP multicast IP 224.0.1.129。
+   - 输出 sequenceId、sourcePortIdentity、t4 flat ns、t4 seconds/nanoseconds。
+   - 提供 stat_delay_req_count、stat_delay_req_drop_count、stat_non_delay_ptp_count、last_seq、last_t4、last_error。
+
+2. new/ptp/observer_ptp_delay_req_cdc.v
+   - RX->TX 单记录 req/ack CDC bridge。
+   - 源域 record bus 被 hold 住，直到目的域 Delay_Resp TX 接受并返回 ACK。
+   - 目的域输出 dst_valid_pulse 信号名保持不变，但语义为“valid level until ready”；Delay_Resp TX 在 ready 时接收并自动 ACK。
+   - 使用 ASYNC_REG 同步链同步 req/ack toggle。
+
+3. new/ptp/observer_ptp_delay_resp_tx.v
+   - TX-domain Delay_Resp generator。
+   - 输出完整 Ethernet frame body：Ethernet + IPv4 + UDP + PTP Delay_Resp payload。
+   - UDP src/dst port 固定为 320，IPv4 total length=82，UDP length=62，PTP messageLength=54。
+   - sequenceId 复制 Delay_Req sequenceId。
+   - receiveTimestamp 使用 Observer RX SFD 捕获的 t4。
+   - requestingPortIdentity 复制 Delay_Req sourcePortIdentity。
+   - tuser 首字节标记为 PTP general frame，need_timestamp=0。
+
+三、修改/补强的 RTL 文件
+1. new/top/observer_top.v
+   - 集成 Delay_Req RX parser、Delay_Req CDC、Delay_Resp TX。
+   - Delay_Req record bus 编码：
+     {t4_nanoseconds[31:0], t4_seconds[47:0], t4_ns[63:0], sourcePortIdentity[79:0], sequenceId[15:0]}。
+   - TX mux 优先级：Delay_Resp > Sync/Follow_Up > debug/test frame。
+   - TX/RX status CDC 扩展到 Delay_Req / Delay_Resp 计数。
+   - UART STAT 字段扩展为：
+     STAT,uptime,rx_frames,rx_drops,tx_frames,flags,sync,fup,timeout,seq,t1lo,rxsync,dreq,dresp,ddrop,dseq,t4lo
+
+2. new/eth/observer_tx_mux.v
+   - 从原 2:1 frame mux 升级为 3:1 frame mux。
+   - 保持帧级仲裁，不在帧中间切换源。
+   - s0=Delay_Resp，s1=periodic PTP Sync/Follow_Up，s2=debug/test。
+
+3. new/board/observer_axis_mac_rx.v / new/board/observer_top_phy.v
+   - RX timestamp 输出扩展为 flat ns + secondsField + nanosecondsField。
+   - seconds/nanoseconds 与 flat ns 使用相同 8ns SFD 补偿口径。
+   - 为 Delay_Resp receiveTimestamp 提供 PTP timestamp field，避免在 TX 侧做 64-bit 除法。
+
+4. new/uart/observer_telemetry_formatter.v
+   - STAT 行增加 dreq、dresp、dreq_drop、dreq_seq、dreq_t4_low 五个字段。
+   - 继续保持所有数字字段为 8 位十六进制，便于 PC 端 CSV 日志保存。
+
+四、当前逻辑架构
+1. Observer 周期性发送 two-step Sync/Follow_Up：
+   observer_ptp_master_tx -> observer_tx_mux.s1 -> observer_axis_mac_tx -> RGMII。
+2. DUT 发送 Delay_Req 后：
+   observer_axis_mac_rx -> observer_ptp_delay_req_rx -> observer_ptp_delay_req_cdc -> observer_ptp_delay_resp_tx -> observer_tx_mux.s0 -> observer_axis_mac_tx。
+3. Delay_Resp 使用 RX SFD timestamp t4，并携带 DUT requestingPortIdentity，支持 DUT 侧形成 t1/t2/t3/t4 E2E PTP 闭环。
+
+五、静态集成检查
+1. 已检查 observer_top.v 中新增实例端口与模块声明端口一致。
+2. 已检查工程中无重复同名模块定义。
+3. 已检查 Delay_Req record bus 打包/解包位宽一致，DREQ_RECORD_WIDTH=240。
+4. 已检查 Delay_Resp frame 长度关系：
+   - Ethernet frame body bytes = 96；
+   - IPv4 total length = 82；
+   - UDP length = 62；
+   - PTP Delay_Resp messageLength = 54。
+5. 已检查 TX mux 帧级仲裁逻辑：Delay_Resp 仅在 mux idle 时抢占优先级，不会打断正在发送的 Sync/FUP 或 debug frame。
+
+六、使用说明
+1. Vivado 工程需要把 new/ptp/observer_ptp_delay_req_rx.v、observer_ptp_delay_req_cdc.v、observer_ptp_delay_resp_tx.v 加入 design sources。
+2. 保持原 clk_mmcm、clk_eth_rx IP 与 RGMII/XDC 约束。
+3. Bring-up 建议顺序：
+   - 先确认原 STAT、Sync、Follow_Up、timeout=0；
+   - 再让 DUT 发 Delay_Req；
+   - 观察 STAT 中 dreq 与 dresp 是否同步增加；
+   - DUT 侧检查 PTP_RX mailbox 是否收到 Delay_Resp，sequenceId 是否匹配；
+   - 最后启动 DUT servo，采集 offset / mean_path_delay / freq_adj_ppb 曲线。
+
+七、仍未实现/后续阶段
+1. DUT acquisition UDP packet parser / OBS_RXD 日志尚未实现。
+2. TSN slot phase monitor / OBS_TSN 尚未实现。
+3. 高速逐包日志仍受 UART 带宽限制；高包率实验建议先做硬件统计或提高 UART baud。
+4. 仍需要在 Vivado 中补完整 XDC、report_timing、report_cdc，并进行上板验证。

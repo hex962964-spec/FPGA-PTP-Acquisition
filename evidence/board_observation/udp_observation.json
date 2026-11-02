@@ -1,0 +1,79 @@
+{
+  "source": "existing dashboard8775, read-only observation; no capture started/stopped",
+  "first": {
+    "observed_at": "2026-10-27T15:32:46.656254+08:00",
+    "running": true,
+    "total": 2213632,
+    "idle_s": 0.00023865699768066406,
+    "error": "",
+    "counts": {
+      "LOCKED": 2159080,
+      "HOLDOVER": 47226,
+      "REACQUIRE": 7326
+    },
+    "last": {
+      "received_at": "2026-10-27T07:32:46.639463+00:00",
+      "peer_ip": "192.168.0.14",
+      "peer_port": 1234,
+      "udp_bytes": 356,
+      "version": 2,
+      "time_quality": "LOCKED",
+      "sequence": 224092,
+      "channel": 1,
+      "sample_count": 168,
+      "timestamp": "736043687347",
+      "disposition": "USE",
+      "error": ""
+    },
+    "gap_count": 5,
+    "max_gap_s": 158.0519859790802,
+    "sequence_resets": 5,
+    "sequence_missing": 0,
+    "duplicates": 0,
+    "timestamp_backwards": 0,
+    "capture": "capture_20261027_152121_774785"
+  },
+  "last": {
+    "observed_at": "2026-10-27T15:33:06.704898+08:00",
+    "running": true,
+    "total": 2305399,
+    "idle_s": 0.0009152889251708984,
+    "error": "",
+    "counts": {
+      "LOCKED": 2250847,
+      "HOLDOVER": 47226,
+      "REACQUIRE": 7326
+    },
+    "last": {
+      "received_at": "2026-10-27T07:33:06.681053+00:00",
+      "peer_ip": "192.168.0.14",
+      "peer_port": 1234,
+      "udp_bytes": 356,
+      "version": 2,
+      "time_quality": "LOCKED",
+      "sequence": 315859,
+      "channel": 1,
+      "sample_count": 168,
+      "timestamp": "756085626595",
+      "disposition": "USE",
+      "error": ""
+    },
+    "gap_count": 5,
+    "max_gap_s": 158.0519859790802,
+    "sequence_resets": 5,
+    "sequence_missing": 0,
+    "duplicates": 0,
+    "timestamp_backwards": 0,
+    "capture": "capture_20261027_152121_774785"
+  },
+  "delta_packets": 91767,
+  "delta_counts": {
+    "REACQUIRE": 0,
+    "LOCKED": 91767,
+    "HOLDOVER": 0
+  },
+  "delta_sequence_missing": 0,
+  "delta_duplicates": 0,
+  "delta_timestamp_backwards": 0,
+  "delta_gaps": 0
+}

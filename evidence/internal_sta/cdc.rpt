@@ -1,0 +1,25 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
+| Date         : Tue Oct 27 18:32:10 2026
+| Host         : xiaohe running 64-bit major release  (build 9200)
+| Command      : report_cdc -file D:/111.wenjian/5.fpgatest2/work/timing_closure_1/build_4/cdc.rpt
+| Design       : soc_top
+| Device       : 7a200t-fbg484
+| Speed File   : -2  PRODUCTION 1.23 2018-06-13
+| Design State : Physopt postRoute
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+CDC Report
+
+Severity  Source Clock           Destination Clock      CDC Type                 Exceptions               Endpoints  Safe  Unsafe  Unknown  No ASYNC_REG  
+--------  ---------------------  ---------------------  -----------------------  -----------------------  ---------  ----  ------  -------  ------------  
+Critical  eth_clk_clk_pll        clk_out1_rgmii_rx_pll  No Common Primary Clock  None                           293   292       1        0             0  
+Critical  sys_clk_clk_pll        cpu_clk_clk_pll        Safely Timed             Max Delay Datapath Only        142   140       2        0             0  
+Critical  clk_out1_rgmii_rx_pll  eth_clk_clk_pll        No Common Primary Clock  None                             2     1       1        0             0  
+Critical  cpu_clk_clk_pll        sys_clk_clk_pll        Safely Timed             Max Delay Datapath Only        202   200       2        0             0  
+Warning   sys_clk_clk_pll        clk_out1_rgmii_rx_pll  No Common Primary Clock  Max Delay Datapath Only        180   180       0        0             0  
+Warning   clk_out1_rgmii_rx_pll  sys_clk_clk_pll        No Common Primary Clock  None                            76    76       0        0             0  
+Info      sys_clk_clk_pll        eth_clk_clk_pll        Safely Timed             None                           826   826       0        0             0  
+Info      eth_clk_clk_pll        sys_clk_clk_pll        Safely Timed             None                          1151  1151       0        0             0  
+

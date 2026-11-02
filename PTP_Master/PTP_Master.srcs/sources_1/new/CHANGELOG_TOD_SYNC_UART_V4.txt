@@ -1,0 +1,89 @@
+Observer FPGA RTL update: TX->RX ToD recovery + UART observability v4
+=====================================================================
+
+Date: 2026-05-25
+Input package: new (2)(1).zip
+Output package: observer_fpga_tod_sync_uart_v4_full.zip
+
+Background
+----------
+Recent dual-FPGA bring-up showed that DUT can receive Observer Sync/Follow_Up
+and can transmit Delay_Req, while Observer RX sees valid frames but rejects the
+Delay_Req candidate with dreq_err=0x0002 (ERR_NO_TIMESTAMP).  UART diagnostics
+showed rx_tod_valid=0 and tod_sync_pending=1, which means the Observer RX SFD
+Timestamp path was blocked by TX->RX ToD epoch synchronization not completing.
+
+Main RTL changes
+----------------
+1. time/observer_tod_fabric.v
+   - Added RX_ACK_TIMEOUT_CYCLES parameter, default 1,250,000 cycles (10 ms at
+     125 MHz).
+   - Added tx_ack_timeout_r watchdog in the TX-domain req/ack state machine.
+   - When a TX->RX ToD snapshot request remains pending for too long, TX now
+     re-captures the current TX ToD snapshot and toggles tx_req_toggle_r again.
+     This recovers from the case where eth_rx_clk reset/relock occurs while the
+     old request is in flight and the RX domain can no longer observe the old
+     toggle edge.
+   - Added rx_sync_timeout_count output.  This increments each time a ToD
+     snapshot request is re-issued by the watchdog.
+   - Tightened ACK handling: synchronized ACK edges are always consumed, but
+     they are counted as successful sync completions only when rx_sync_pending
+     is actually high.  This avoids spurious sync-count increments after RX
+     reset moves the ACK toggle while TX is idle.
+
+2. top/observer_top.v
+   - Connected observer_tod_fabric.rx_sync_timeout_count to TX-domain UART
+     status snapshots.
+   - Added rx_axis_timestamp_count_r, counting observer_axis_mac_rx SFD timestamp
+     valid pulses in eth_rx_clk domain.  The counter already existed in the
+     bring-up design but was not exported through UART status.
+   - Expanded TX status CDC width from 24 to 25 words.
+   - Expanded RX status CDC width from 16 to 17 words.
+   - Passed the new counters into observer_telemetry_formatter.
+
+3. uart/observer_telemetry_formatter.v
+   - Added two new input fields:
+       tod_sync_timeout_count
+       rx_axis_timestamp_count
+   - Added an extra UART line named DBG, printed after CFG.
+   - DBG line format:
+       DBG,uptime,rx_axis_timestamp_count,tod_sync_timeout_count,
+           tod_rx_sync_count,rx_frame_count,rx_drop_count,rx_last_error,
+           delay_req_non_delay_ptp_count,delay_req_last_error,
+           delay_req_count,delay_resp_count,rx_tod_valid,tod_sync_pending,
+           rx_heartbeat_count,tx_heartbeat_count,build_version
+
+How to interpret the new diagnostics
+------------------------------------
+- If RX.rx_frames increases but DBG.rx_axis_timestamp_count stays 0, the RX MAC
+  is receiving frames but the SFD timestamp output is still not valid.
+- If DBG.tod_sync_timeout_count increases for a few cycles and then stops while
+  CLK.rx_tod_valid becomes 1, the watchdog successfully recovered RX ToD.
+- If DBG.tod_sync_timeout_count keeps increasing and CLK.rx_tod_valid remains 0,
+  the RX ToD domain is still not accepting/acknowledging TX snapshots; check
+  eth_rx_clk, rx_rst_n, and the TX->RX ToD CDC signals with ILA.
+- Healthy Delay_Req/Delay_Resp bring-up target:
+      RX.rx_frames increases
+      DBG.rx_axis_timestamp_count increases
+      CLK.rx_tod_valid = 1
+      RX.dreq increases
+      PTP.dresp / TX.mux_dresp increases
+      DUT leaves WAIT_DELAY_RESP
+
+Static checks performed
+-----------------------
+- 18 Verilog modules found; no duplicate module definitions.
+- All RTL files retain `default_nettype none.
+- New observer_tod_fabric output is connected in observer_top.
+- New observer_telemetry_formatter inputs are connected in observer_top.
+- TX/RX status bus widths and unpack indices were updated consistently.
+
+Vivado still required
+---------------------
+This package has not been synthesized in Vivado in this environment.  Please run:
+  - RTL elaboration
+  - synthesis
+  - implementation
+  - report_timing
+  - report_cdc
+before treating it as a timing-signed bitstream.

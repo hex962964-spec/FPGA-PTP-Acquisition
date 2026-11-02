@@ -1,0 +1,16 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
+| Date         : Tue Oct 27 18:32:21 2026
+| Host         : xiaohe running 64-bit major release  (build 9200)
+| Command      : report_exceptions -ignored -file D:/111.wenjian/5.fpgatest2/work/timing_closure_1/build_4/ignored_exceptions.rpt
+| Design       : soc_top
+| Device       : 7a200t-fbg484
+| Speed File   : -2  PRODUCTION 1.23 2018-06-13
+| Design State : Physopt postRoute
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Exceptions Report
+
+No ignored timing exceptions found.
+

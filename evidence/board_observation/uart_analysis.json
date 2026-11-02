@@ -1,0 +1,56 @@
+{
+  "kind": "30-second live UART snapshot; not startup timing or independent physical accuracy verification",
+  "capture": {
+    "rts": false,
+    "started": "2026-10-27T15:33:25.7894014+08:00",
+    "dtr": false,
+    "baud": 115200,
+    "characters": 133578,
+    "port": "COM7",
+    "ended": "2026-10-27T15:33:55.8429025+08:00",
+    "detail": null,
+    "status": "captured"
+  },
+  "servo_records": 150,
+  "cycle_first": 464,
+  "cycle_last": 613,
+  "cycle_gaps": [],
+  "valid_records": 150,
+  "rejected_records": 0,
+  "valid_raw_offset_ns": {
+    "min": -6,
+    "max": 12,
+    "max_abs": 12,
+    "mean": 1.3333333333333333,
+    "rms": 3.847076812334269,
+    "within50_count": 150,
+    "within50_percent": 100.0
+  },
+  "all_record_max_abs_offset_ns": 12,
+  "fine_locked_records": 150,
+  "ready_records": 150,
+  "stream_on_records": 150,
+  "quality_counts": {
+    "OK": 150
+  },
+  "modes": {
+    "FAST50_TRACK": 150
+  },
+  "frequency_ppb_range": [
+    1185,
+    1287
+  ],
+  "raw_formula_mismatch_cycles": [],
+  "precision_telemetry_last": {
+    "precision_limit_ns": "50",
+    "precision_streak": "8",
+    "controller": "FAST50",
+    "servo_build": "0x20261027"
+  },
+  "limits": [
+    "Short steady observation only, no reset performed",
+    "Internal four-timestamp estimate, fixed timestamp bias not independently measured",
+    "Does not remove static timing violations"
+  ],
+  "raw_formula": "signed nearest integer rounding of (d1-d2)/2, same as firmware div_round_nearest_s64"
+}

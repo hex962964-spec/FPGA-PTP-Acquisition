@@ -1,0 +1,72 @@
+#-----------------------------------------------------------
+# Vivado v2025.2 (64-bit)
+# SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+# IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+# SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+# Start of session at: Thu Oct 29 15:53:47 2026
+# Process ID         : 28816
+# Current directory  : D:/111.wenjian/7.bisaitijiao/04_全部代码/基于FPGA时敏同步采集_全部代码/FPGA_TSN_Acquisition/la32r_soc/fpga/project
+# Command line       : vivado.exe -gui_launcher_event rodinguilauncherevent2328 D:\111.wenjian\7.bisaitijiao\04_全部代码\基于FPGA时敏同步采集_全部代码\FPGA_TSN_Acquisition\la32r_soc\fpga\project\Loongson_Soc.xpr
+# Log file           : D:/111.wenjian/7.bisaitijiao/04_全部代码/基于FPGA时敏同步采集_全部代码/FPGA_TSN_Acquisition/la32r_soc/fpga/project/vivado.log
+# Journal file       : D:/111.wenjian/7.bisaitijiao/04_全部代码/基于FPGA时敏同步采集_全部代码/FPGA_TSN_Acquisition/la32r_soc/fpga/project\vivado.jou
+# Running On         : xiaohe
+# Platform           : Windows Server 2016 or Windows 10
+# Operating System   : 26200
+# Processor Detail   : Intel(R) Core(TM) Ultra 5 225H
+# CPU Frequency      : 3686 MHz
+# CPU Physical cores : 14
+# CPU Logical cores  : 14
+# Host memory        : 33752 MB
+# Swap memory        : 2147 MB
+# Total Virtual      : 35900 MB
+# Available Virtual  : 18207 MB
+#-----------------------------------------------------------
+start_gui
+open_project D:/111.wenjian/7.bisaitijiao/04_全部代码/基于FPGA时敏同步采集_全部代码/FPGA_TSN_Acquisition/la32r_soc/fpga/project/Loongson_Soc.xpr
+INFO: [ProjectBase 1-489] The host OS only allows 260 characters in a normal path. The project is stored in a path with more than 80 characters. If you experience issues with IP, Block Designs, or files not being found, please consider moving the project to a location with a shorter path. Alternately consider using the OS subst command to map part of the path to a drive letter.
+Current project path is 'D:/111.wenjian/7.bisaitijiao/04_全部代码/基于FPGA时敏同步采集_全部代码/FPGA_TSN_Acquisition/la32r_soc/fpga/project'
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vrk160:part0:1.0 available at D:/1.ruanjian/1.Vivado/2025.2/data/xhub/boards\XilinxBoardStore\boards\Xilinx\vrk160\1.0\board.xml as part xcvr1602-vsva2488-2mp-e-s-es1 specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vrk160:part0:1.1 available at D:/1.ruanjian/1.Vivado/2025.2/data/xhub/boards\XilinxBoardStore\boards\Xilinx\vrk160\1.1\board.xml as part xcvr1602-vsva2488-2mp-e-s-es1 specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:zcu208ld:part0:2.0 available at D:/1.ruanjian/1.Vivado/2025.2/data/xhub/boards\XilinxBoardStore\boards\Xilinx\zcu208ld\production\2.0\board.xml as part xczu58dr-fsvg1517-2-i specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:zcu216ld:part0:2.0 available at D:/1.ruanjian/1.Vivado/2025.2/data/xhub/boards\XilinxBoardStore\boards\Xilinx\zcu216ld\production\2.0\board.xml as part xczu59dr-ffvf1760-2-i specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:zcu670ld:part0:1.0 available at D:/1.ruanjian/1.Vivado/2025.2/data/xhub/boards\XilinxBoardStore\boards\Xilinx\zcu670ld\1.0\board.xml as part xczu57dr-fsve1156-2-i specified in board_part file is either invalid or not available
+INFO: [Project 1-313] Project file moved from 'D:/111.wenjian/5.fpgatest2/la32r_soc/fpga/project' since last save.
+INFO: [filemgmt 56-3] Default IP Output Path : Could not find the directory 'D:/111.wenjian/7.bisaitijiao/04_全部代码/基于FPGA时敏同步采集_全部代码/FPGA_TSN_Acquisition/la32r_soc/fpga/project/Loongson_Soc.gen/sources_1'.
+WARNING: [filemgmt 56-3] IPUserFilesDir: Could not find the directory 'D:/111.wenjian/7.bisaitijiao/04_全部代码/基于FPGA时敏同步采集_全部代码/FPGA_TSN_Acquisition/la32r_soc/fpga/project/Loongson_Soc.ip_user_files'.
+WARNING: [Project 1-312] File not found as 'D:/111.wenjian/7.bisaitijiao/04_全部代码/基于FPGA时敏同步采集_全部代码/FPGA_TSN_Acquisition/la32r_soc/fpga/project/Loongson_Soc.srcs/utils_1/imports/synth_1/soc_top.dcp'; using path 'D:/111.wenjian/5.fpgatest2/la32r_soc/fpga/project/Loongson_Soc.srcs/utils_1/imports/synth_1/soc_top.dcp' instead.
+Scanning sources...
+Finished scanning sources
+WARNING: [Project 1-509] GeneratedRun file for 'synth_1' not found
+WARNING: [Project 1-509] GeneratedRun file for 'rgmii_rx_pll_synth_1' not found
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vrk160:part0:1.0 available at D:/1.ruanjian/1.Vivado/2025.2/data/xhub/boards\XilinxBoardStore\boards\Xilinx\vrk160\1.0\board.xml as part xcvr1602-vsva2488-2mp-e-s-es1 specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vrk160:part0:1.1 available at D:/1.ruanjian/1.Vivado/2025.2/data/xhub/boards\XilinxBoardStore\boards\Xilinx\vrk160\1.1\board.xml as part xcvr1602-vsva2488-2mp-e-s-es1 specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:zcu208ld:part0:2.0 available at D:/1.ruanjian/1.Vivado/2025.2/data/xhub/boards\XilinxBoardStore\boards\Xilinx\zcu208ld\production\2.0\board.xml as part xczu58dr-fsvg1517-2-i specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:zcu216ld:part0:2.0 available at D:/1.ruanjian/1.Vivado/2025.2/data/xhub/boards\XilinxBoardStore\boards\Xilinx\zcu216ld\production\2.0\board.xml as part xczu59dr-ffvf1760-2-i specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:zcu670ld:part0:1.0 available at D:/1.ruanjian/1.Vivado/2025.2/data/xhub/boards\XilinxBoardStore\boards\Xilinx\zcu670ld\1.0\board.xml as part xczu57dr-fsve1156-2-i specified in board_part file is either invalid or not available
+WARNING: [Project 1-5713] Board part '' set for the project  is not found. BoardPart property will be unset. Please select board from latest repo build 
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1704] No user IP repositories specified
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository 'D:/1.ruanjian/1.Vivado/2025.2/Vivado/data/ip'.
+WARNING: [IP_Flow 19-3664] IP 'clk_pll' generated file not found 'd:/111.wenjian/7.bisaitijiao/04_全部代码/基于FPGA时敏同步采集_全部代码/FPGA_TSN_Acquisition/la32r_soc/rtl/ip/PLL_2019_2/clk_pll.dcp'. Please regenerate to continue.
+WARNING: [IP_Flow 19-3664] IP 'rgmii_rx_pll' generated file not found 'd:/111.wenjian/7.bisaitijiao/04_全部代码/基于FPGA时敏同步采集_全部代码/FPGA_TSN_Acquisition/la32r_soc/rtl/ip/PLL_2025_2/rgmii_rx_pll/rgmii_rx_pll.dcp'. Please regenerate to continue.
+open_project: Time (s): cpu = 00:00:12 ; elapsed = 00:00:06 . Memory (MB): peak = 1791.938 ; gain = 175.980
+update_compile_order -fileset sources_1
+launch_runs synth_1 -jobs 7
+[Thu Oct 29 15:54:08 2026] Launched rgmii_rx_pll_synth_1, clk_pll_synth_1...
+Run output will be captured here:
+rgmii_rx_pll_synth_1: D:/111.wenjian/7.bisaitijiao/04_全部代码/基于FPGA时敏同步采集_全部代码/FPGA_TSN_Acquisition/la32r_soc/fpga/project/Loongson_Soc.runs/rgmii_rx_pll_synth_1/runme.log
+clk_pll_synth_1: D:/111.wenjian/7.bisaitijiao/04_全部代码/基于FPGA时敏同步采集_全部代码/FPGA_TSN_Acquisition/la32r_soc/fpga/project/Loongson_Soc.runs/clk_pll_synth_1/runme.log
+[Thu Oct 29 15:54:08 2026] Launched synth_1...
+Run output will be captured here: D:/111.wenjian/7.bisaitijiao/04_全部代码/基于FPGA时敏同步采集_全部代码/FPGA_TSN_Acquisition/la32r_soc/fpga/project/Loongson_Soc.runs/synth_1/runme.log
+reset_run rgmii_rx_pll_synth_1
+reset_run clk_pll_synth_1
+reset_run synth_1
+launch_runs synth_1 -jobs 7
+[Thu Oct 29 15:54:37 2026] Launched rgmii_rx_pll_synth_1, clk_pll_synth_1...
+Run output will be captured here:
+rgmii_rx_pll_synth_1: D:/111.wenjian/7.bisaitijiao/04_全部代码/基于FPGA时敏同步采集_全部代码/FPGA_TSN_Acquisition/la32r_soc/fpga/project/Loongson_Soc.runs/rgmii_rx_pll_synth_1/runme.log
+clk_pll_synth_1: D:/111.wenjian/7.bisaitijiao/04_全部代码/基于FPGA时敏同步采集_全部代码/FPGA_TSN_Acquisition/la32r_soc/fpga/project/Loongson_Soc.runs/clk_pll_synth_1/runme.log
+[Thu Oct 29 15:54:37 2026] Launched synth_1...
+Run output will be captured here: D:/111.wenjian/7.bisaitijiao/04_全部代码/基于FPGA时敏同步采集_全部代码/FPGA_TSN_Acquisition/la32r_soc/fpga/project/Loongson_Soc.runs/synth_1/runme.log
+exit
+INFO: [Common 17-206] Exiting Vivado at Thu Oct 29 16:00:11 2026...

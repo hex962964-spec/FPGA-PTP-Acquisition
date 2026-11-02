@@ -1,0 +1,68 @@
+Observer FPGA UART Diagnostics V3 修改日志
+=========================================
+
+修改目标
+--------
+在不改变 Observer FPGA 当前 PTP Master / Delay_Req / Delay_Resp 数据通路的前提下，增强 UART 输出，便于定位：
+1) DUT 卡 WAIT_SYNC 时，Observer 是否真正发出 Sync/Follow_Up；
+2) RX 时钟域是否运行，RX ToD 是否有效，ToD snapshot CDC 是否卡住；
+3) RGMII/MAC RX 是否收到帧；
+4) Delay_Req parser 是否看到 Delay_Req、非 Delay PTP、格式错误、无时间戳或 CDC 忙；
+5) Delay_Resp TX 是否真的发送；
+6) MAC/IP/domain/baud/sync interval 是否与 DUT 配置一致。
+
+主要 RTL 修改
+------------
+1. 修改 top/observer_top.v
+   - 保留原有 STAT 兼容行，新增多行 UART telemetry 输入接线。
+   - TX/RX 状态仍通过 observer_status_cdc_bridge 做 req/ack snapshot，不直接在 sys_clk 域采样多位异步状态。
+   - TX status CDC 扩展为 24 个 32-bit word，包含：TX frame/byte/error、Sync/FUP/timeout/seq、last t1 高低位、seconds/nanoseconds、Delay_Resp count/seq/t4、mux frame counters、tx heartbeat、tx ToD 高低位、busy/valid bits。
+   - RX status CDC 扩展为 16 个 32-bit word，包含：RX frame/drop/error、rx heartbeat、rx ToD 高低位/valid、Delay_Req count/drop/non-delay/error/cdc_drop/seq/t4。
+   - 增加 telemetry_timeout_count 与 telemetry_last_wait_cycles，判断 sys_clk 等待 TX/RX status snapshot 是否超时。
+   - 增加 observer_status_ext，用一个综合状态字汇总 telemetry_busy、have_tx_stat、have_rx_stat、rx_status_available、lock/reset 等。
+   - 增加 build_version=0x20260524，CFG 行中打印。
+
+2. 修改 uart/observer_telemetry_formatter.v
+   - UART 输出由原先每秒一条 STAT 行升级为每秒 6 条 CSV-like 文本行：STAT、CLK、PTP、TX、RX、CFG。
+   - STAT 行保持原 Stage-1 字段顺序，便于旧脚本继续解析。
+   - 新增 CLK/PTP/TX/RX/CFG 行，字段均为 8 位十六进制，便于串口终端直接观察。
+
+UART 输出格式
+-------------
+每次 start_pulse 后输出 6 行：
+
+1) STAT 行，旧格式兼容：
+STAT,uptime,rx_frames,rx_drops,tx_frames,flags,sync,fup,timeout,seq,t1lo,rxsync,dreq,dresp,ddrop,dseq,t4lo
+
+2) CLK 行，时钟/ToD/状态采样：
+CLK,uptime,flags,status_ext,tx_hb,rx_hb,tx_tod_lo,rx_tod_lo,rxsync,stat_timeout,stat_wait,rx_avail,tx_tod_valid,rx_tod_valid,tod_pending,tx_tod_hi,rx_tod_hi
+
+3) PTP 行，Sync/FUP 与 master t1：
+PTP,sync,fup,timeout,seq,t1_hi,t1_lo,t1_seconds_low,t1_nanoseconds,ptp_master_busy,tx_tod_valid,tx_tod_hi,tx_tod_lo,dresp,dreq,stat_timeout,build
+
+4) TX 行，MAC TX / mux / Delay_Resp：
+TX,tx_frames,tx_bytes,tx_err,mux_dresp,mux_ptp,mux_debug,dresp,dresp_seq,dresp_t4_hi,dresp_t4_lo,dresp_busy,test_tx,tx_hb,tx_tod_hi,tx_tod_lo,build
+
+5) RX 行，MAC RX / Delay_Req parser：
+RX,rx_frames,rx_drops,rx_err,rx_hb,rx_busy,rx_tod_valid,rx_tod_hi,rx_tod_lo,dreq,ddrop,non_delay,dreq_err,cdc_drop,dseq,t4_hi,t4_lo
+
+6) CFG 行，静态配置和版本：
+CFG,local_mac_low,local_mac_high,dut_mac_low,dut_mac_high,local_ip,dut_ip,domain,sync_interval,uart_baud,sys_clk,domain_nonzero,build,0,0,0,0
+
+关键排查建议
+------------
+- 如果 STAT.sync/FUP 递增而 DUT WAIT_SYNC：先看 DUT 是否匹配 CFG 行中的 LOCAL_MAC/DUT_MAC/LOCAL_IP/DUT_IP/domain。
+- 如果 RX.rx_frames=0：Observer 没收到 DUT 返回帧，或 RX clock/RGMII/PHY 方向有问题。
+- 如果 CLK.rx_hb 不递增：Observer RX clock 域未运行。
+- 如果 CLK.rx_hb 递增但 CLK.rx_tod_valid=0 且 tod_pending=1：ToD TX->RX snapshot/ack 可能卡住。
+- 如果 RX.dreq 不增且 RX.non_delay 增：Observer 看到了 PTP 帧，但不是 Delay_Req 或字段不匹配。
+- 如果 RX.dreq_err=00000002：Delay_Req 无有效 RX timestamp。
+- 如果 RX.cdc_drop 增：RX->TX 单记录 Delay_Req CDC 忙，可能 Delay_Req 过快或 TX 被阻塞。
+- 如果 RX.dreq 增但 TX.dresp 不增：Delay_Resp generator 或 TX mux 侧需要检查。
+
+静态检查
+--------
+- 模块数量：18 个。
+- 所有 .v 文件均含 default_nettype none。
+- observer_top 内实例 named-port 与被实例化模块端口已做静态一致性检查。
+- 未在当前环境运行 Vivado 综合/实现；仍需在 Vivado 中执行 RTL Analysis、Synthesis、Implementation、report_timing、report_cdc。

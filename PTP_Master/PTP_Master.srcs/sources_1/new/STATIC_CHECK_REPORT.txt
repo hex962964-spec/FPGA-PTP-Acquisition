@@ -1,0 +1,47 @@
+Observer FPGA v4 static check report
+====================================
+
+Scope:
+  - TX->RX ToD sync watchdog/reissue logic
+  - UART extra diagnostics: DBG line
+  - Status CDC width/index consistency
+
+Key implementation checks:
+  - observer_tod_fabric exposes rx_sync_timeout_count.
+  - observer_top connects rx_sync_timeout_count to TX status CDC word 24.
+  - observer_top exports rx_axis_timestamp_count_r through RX status CDC word 16.
+  - observer_telemetry_formatter accepts tod_sync_timeout_count and rx_axis_timestamp_count.
+  - observer_telemetry_formatter emits STAT, CLK, PTP, TX, RX, CFG, DBG lines.
+
+Expected new UART DBG line fields:
+  DBG[0]  uptime_s
+  DBG[1]  rx_axis_timestamp_count
+  DBG[2]  tod_sync_timeout_count
+  DBG[3]  tod_rx_sync_count
+  DBG[4]  rx_frame_count
+  DBG[5]  rx_drop_count
+  DBG[6]  rx_last_error
+  DBG[7]  delay_req_non_delay_ptp_count
+  DBG[8]  delay_req_last_error
+  DBG[9]  delay_req_count
+  DBG[10] delay_resp_count
+  DBG[11] rx_tod_valid
+  DBG[12] tod_sync_pending
+  DBG[13] rx_heartbeat_count
+  DBG[14] tx_heartbeat_count
+  DBG[15] build_version
+
+Limitations:
+  Vivado synthesis/timing/CDC signoff was not run inside this assistant runtime.
+
+Automated textual checks:
+  RTL files: 18
+  Modules: 18
+  Duplicate modules: none
+  Files missing default_nettype none: none
+  tod output rx_sync_timeout_count: OK
+  top connects rx_sync_timeout_count: OK
+  top TX_STAT_WIDTH 800: OK
+  top RX_STAT_WIDTH 544: OK
+  formatter DBG line: OK
+  formatter extra ports: OK

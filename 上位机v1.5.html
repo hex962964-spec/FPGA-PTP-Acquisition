@@ -1,0 +1,2906 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>采集时间质量监测 · 第9版</title>
+  <style>
+    :root {
+      --bg0: #f5f5f7;
+      --bg1: #ffffff;
+      --bg2: rgba(255,255,255,0.74);
+      --text0: #1d1d1f;
+      --text1: #515154;
+      --text2: #86868b;
+      --line: rgba(0,0,0,0.10);
+      --shadow: 0 24px 70px rgba(0,0,0,0.12);
+      --shadow-soft: 0 12px 30px rgba(0,0,0,0.08);
+      --accent: #0071e3;
+      --accent2: #5e5ce6;
+      --green: #30d158;
+      --red: #ff453a;
+      --orange: #ff9f0a;
+      --blueSoft: rgba(0,113,227,0.10);
+      --glass: blur(24px) saturate(180%);
+      color-scheme: light;
+    }
+
+    [data-theme="dark"] {
+      --bg0: #000000;
+      --bg1: #111114;
+      --bg2: rgba(28,28,30,0.72);
+      --text0: #f5f5f7;
+      --text1: #c7c7cc;
+      --text2: #8e8e93;
+      --line: rgba(255,255,255,0.16);
+      --shadow: 0 24px 70px rgba(0,0,0,0.55);
+      --shadow-soft: 0 12px 30px rgba(0,0,0,0.42);
+      --blueSoft: rgba(10,132,255,0.18);
+      color-scheme: dark;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background:
+        radial-gradient(circle at 22% -10%, rgba(0,113,227,0.24), transparent 34%),
+        radial-gradient(circle at 88% 0%, rgba(94,92,230,0.20), transparent 28%),
+        linear-gradient(180deg, var(--bg0), var(--bg1) 46%, var(--bg0));
+      color: var(--text0);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: var(--glass);
+      -webkit-backdrop-filter: var(--glass);
+      background: rgba(245,245,247,0.72);
+      border-bottom: 1px solid var(--line);
+    }
+    [data-theme="dark"] header { background: rgba(0,0,0,0.62); }
+
+    .nav {
+      max-width: 1920px;
+      margin: 0 auto;
+      padding: 14px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+    .mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 13px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 12px 22px rgba(0,113,227,0.28);
+      display: grid;
+      place-items: center;
+      color: white;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+    .brand h1 {
+      margin: 0;
+      font-size: 17px;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+    .brand small {
+      display: block;
+      color: var(--text2);
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    .header-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; min-width: 0; }
+
+    main {
+      max-width: 1920px;
+      margin: 0 auto;
+      padding: 34px 22px 70px;
+    }
+
+    .hero {
+      padding: 36px 0 24px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+      gap: 24px;
+      align-items: stretch;
+    }
+    .hero-card {
+      border: 1px solid var(--line);
+      background: var(--bg2);
+      backdrop-filter: var(--glass);
+      -webkit-backdrop-filter: var(--glass);
+      border-radius: 34px;
+      padding: 34px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+      min-width: 0;
+    }
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      width: 360px;
+      height: 360px;
+      right: -160px;
+      top: -160px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,113,227,0.18), transparent 62%);
+      pointer-events: none;
+    }
+    .eyebrow {
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin: 0 0 12px;
+      font-size: 14px;
+    }
+    .hero h2 {
+      margin: 0;
+      font-size: clamp(40px, 6vw, 74px);
+      line-height: 0.94;
+      letter-spacing: -0.065em;
+      max-width: 850px;
+    }
+    .hero p {
+      color: var(--text1);
+      font-size: 18px;
+      line-height: 1.55;
+      max-width: 840px;
+      margin: 18px 0 0;
+    }
+    .side-card {
+      border: 1px solid var(--line);
+      border-radius: 34px;
+      padding: 26px;
+      background: var(--bg2);
+      backdrop-filter: var(--glass);
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--blueSoft);
+      color: var(--text0);
+      font-size: 12px;
+      font-weight: 650;
+      border: 1px solid rgba(0,113,227,0.14);
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text2); }
+    .dot.ok { background: var(--green); box-shadow: 0 0 0 5px rgba(48,209,88,0.16); }
+    .dot.warn { background: var(--orange); box-shadow: 0 0 0 5px rgba(255,159,10,0.16); }
+    .dot.bad { background: var(--red); box-shadow: 0 0 0 5px rgba(255,69,58,0.14); }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+      margin: 14px 0 26px;
+    }
+    .panel {
+      background: var(--bg2);
+      backdrop-filter: var(--glass);
+      -webkit-backdrop-filter: var(--glass);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow-soft);
+      padding: 18px;
+    }
+    .panel h3 {
+      margin: 0 0 14px;
+      font-size: 17px;
+      letter-spacing: -0.02em;
+    }
+    .serial-panel { grid-column: span 7; }
+    .send-panel { grid-column: span 5; }
+
+    label {
+      font-size: 12px;
+      color: var(--text2);
+      font-weight: 650;
+      display: block;
+      margin: 0 0 6px;
+    }
+    select, input, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 13px;
+      background: rgba(255,255,255,0.72);
+      color: var(--text0);
+      font: inherit;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s, background .2s;
+    }
+    [data-theme="dark"] select, [data-theme="dark"] input, [data-theme="dark"] textarea {
+      background: rgba(44,44,46,0.72);
+    }
+    select:focus, input:focus, textarea:focus {
+      border-color: rgba(0,113,227,0.7);
+      box-shadow: 0 0 0 5px rgba(0,113,227,0.14);
+    }
+    textarea {
+      min-height: 168px;
+      resize: vertical;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
+    .buttons { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 11px 16px;
+      font-weight: 750;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      background: rgba(118,118,128,0.14);
+      color: var(--text0);
+      transition: transform .18s ease, box-shadow .18s ease, background .18s ease, opacity .18s ease;
+      user-select: none;
+    }
+    button:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(0,0,0,0.12); }
+    button:active { transform: translateY(0); box-shadow: none; }
+    button.primary { background: var(--accent); color: white; }
+    button.danger { background: rgba(255,69,58,0.14); color: #d70015; }
+    [data-theme="dark"] button.danger { color: #ff6961; }
+    button:disabled { opacity: .48; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin: 18px 0 28px;
+    }
+    .metric {
+      background: var(--bg2);
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      padding: 18px;
+      box-shadow: var(--shadow-soft);
+      min-height: 138px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+    .metric .name { color: var(--text2); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+    .metric .value { font-size: clamp(22px, 3vw, 34px); letter-spacing: -0.05em; font-weight: 780; margin-top: 12px; word-break: break-word; overflow-wrap: anywhere; }
+    .metric .sub { color: var(--text2); font-size: 12px; margin-top: 8px; word-break: break-word; overflow-wrap: anywhere; }
+    .metric.good .value { color: var(--green); }
+    .metric.warn .value { color: var(--orange); }
+    .metric.bad .value { color: var(--red); }
+    .metric.stale .value { color: var(--text2); }
+
+
+    .t-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .time-card {
+      border-radius: 26px;
+      padding: 18px;
+      background: var(--bg2);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-soft);
+      min-width: 0;
+    }
+    .time-card strong { display: block; font-size: 13px; color: var(--text2); margin-bottom: 8px; }
+    .time-card code {
+      display: block;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+      color: var(--text0);
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .time-card span { display: block; margin-top: 8px; color: var(--text2); font-size: 12px; }
+
+    .charts {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(680px, 1fr));
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+    .chart-card {
+      border-radius: 30px;
+      background: var(--bg2);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-soft);
+      padding: 18px;
+      min-width: 0;
+    }
+    .chart-title { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+    .chart-title h3 { margin: 0; font-size: 17px; }
+    .chart-title small { color: var(--text2); }
+    canvas { width: 100%; height: 470px; display: block; border-radius: 20px; background: rgba(255,255,255,0.38); cursor: crosshair; touch-action: none; }
+    [data-theme="dark"] canvas { background: rgba(255,255,255,0.05); }
+
+    .chart-tools { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 10px 0 0; flex-wrap: wrap; }
+    .chart-info { color: var(--text1); font-size: 12px; line-height: 1.45; overflow-wrap: anywhere; min-height: 18px; }
+    .chart-mini-button { padding: 7px 11px; font-size: 12px; box-shadow: none !important; }
+    .nowrap-soft { overflow-wrap: anywhere; word-break: break-word; }
+
+    .log-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, .52fr);
+      gap: 16px;
+    }
+    .logbox {
+      max-height: 410px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 14px;
+      background: rgba(255,255,255,0.54);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      color: var(--text1);
+    }
+    [data-theme="dark"] .logbox { background: rgba(0,0,0,0.24); }
+    .record-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      overflow: hidden;
+      border-radius: 18px;
+    }
+    .record-table th, .record-table td { padding: 10px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+    .record-table th:first-child, .record-table td:first-child { text-align: left; }
+    .record-table th { color: var(--text2); font-size: 11px; text-transform: uppercase; letter-spacing: .04em; }
+    .record-table .sample-quality { max-width: none; min-width: 136px; }
+    .table-wrap { overflow: auto; max-height: 410px; border: 1px solid var(--line); border-radius: 20px; }
+    .record-table td, .record-table th { max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
+
+    .hint {
+      color: var(--text2);
+      font-size: 12px;
+      line-height: 1.48;
+      margin-top: 10px;
+    }
+    .footer {
+      margin-top: 30px;
+      color: var(--text2);
+      font-size: 12px;
+      text-align: center;
+    }
+
+
+
+    /* 版面与溢出修正：长时间戳、长日志和窄屏不会冲出卡片边框。 */
+    html, body { overflow-x: hidden; }
+    body { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+    .brand { min-width: 0; }
+    .brand h1, .brand small, .hero h2, .hero p, .panel, .metric, .time-card, .chart-card { min-width: 0; }
+    button, select, input, textarea { min-width: 0; max-width: 100%; }
+    code, .metric .value, .metric .sub, .time-card code, .time-card span, .logbox, .record-table td, .chart-info {
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .metric .value, .time-card code, .record-table td { font-variant-numeric: tabular-nums; }
+    .metric .value { line-height: 1.05; }
+    .time-card code { white-space: normal; line-height: 1.35; }
+    .table-wrap { width: 100%; }
+    .chart-title { align-items: center; flex-wrap: wrap; }
+    .chart-title > div:first-child, .chart-title h3, .chart-title small { min-width: 0; }
+    .chart-tools { align-items: center; }
+    canvas { touch-action: none; cursor: crosshair; }
+    .chart-card canvas:focus { outline: 3px solid rgba(0,113,227,0.25); outline-offset: 3px; }
+    @media (max-width: 760px) {
+      main { padding-left: 14px; padding-right: 14px; }
+      .nav { padding-left: 14px; padding-right: 14px; }
+      .hero h2 { font-size: clamp(34px, 12vw, 52px); }
+      canvas { height: 320px; }
+      .record-table th, .record-table td { padding: 9px 6px; font-size: 11px; }
+    }
+
+
+    /* 宽屏优化与图表坐标显示 */
+    .chart-card { padding: 20px; }
+    .chart-info { flex: 1 1 360px; }
+    .chart-title small { overflow-wrap: anywhere; }
+    @media (min-width: 1600px) {
+      .hero h2 { max-width: 1080px; }
+      canvas { height: 520px; }
+    }
+
+    @media (max-width: 1100px) {
+      .charts { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 980px) {
+      .hero, .charts, .log-layout { grid-template-columns: 1fr; }
+      .serial-panel, .send-panel { grid-column: 1 / -1; }
+      .cards, .t-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+    @media (max-width: 560px) {
+      .cards, .t-grid, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .hero-card, .side-card { border-radius: 26px; padding: 22px; }
+      .nav { align-items: flex-start; flex-direction: column; }
+    }
+
+    /* v1.4：曲线图独立成行 + 更规范坐标轴布局 */
+    .charts {
+      display: grid !important;
+      grid-template-columns: 1fr !important;
+      gap: 28px !important;
+      margin-bottom: 30px;
+    }
+    .chart-card {
+      width: 100%;
+      padding: 24px;
+    }
+    .chart-title h3 { font-size: 20px; letter-spacing: -0.02em; }
+    .chart-title small { line-height: 1.55; max-width: 1100px; }
+    .chart-tools { margin-top: 12px; }
+    canvas {
+      height: clamp(460px, 42vh, 660px) !important;
+      border-radius: 24px;
+    }
+    @media (max-width: 900px) {
+      canvas { height: 360px !important; }
+      .chart-card { padding: 16px; }
+    }
+
+    /* Clock quality, coarse lock and fine lock are independent indicators. */
+    .cards { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+    .status-cluster { grid-column: span 3; display: grid; grid-template-columns: 1fr 1.1fr; gap: 14px; }
+    .status-unit { min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+    .status-unit .value { margin-top: 7px; font-size: clamp(21px, 2.1vw, 29px); }
+    .status-unit.good .value { color: var(--green); }
+    .status-unit.warn .value { color: var(--orange); }
+    .status-unit.bad .value { color: var(--red); }
+    #timeQualityCard { grid-column: 1; grid-row: 1; }
+    #readyCard { grid-column: 1; grid-row: 2; }
+    #lockCard { grid-column: 2; grid-row: 1 / span 2; border-left: 1px solid var(--line); padding-left: 14px; }
+    .status-cluster > .status-detail { grid-column: 1 / -1; margin-top: 0; }
+    @media (max-width: 1400px) { .cards { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+    @media (max-width: 780px) { .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } .status-cluster { grid-column: span 2; } }
+    @media (max-width: 520px) { .cards { grid-template-columns: minmax(0, 1fr); } .status-cluster { grid-column: span 1; } }
+
+
+    .udp-panel { margin-top: 18px; }
+    .udp-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 12px 0; }
+    .udp-controls select { flex: 1 1 250px; min-width: 0; max-width: 100%; }
+    .udp-summary { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; }
+    .udp-tile { background: var(--bg1); border: 1px solid var(--line); border-radius: 16px; padding: 14px; min-width: 0; }
+    .udp-tile small { color: var(--text2); }
+    .udp-tile strong { display: block; margin-top: 8px; font-size: 23px; overflow-wrap: anywhere; }
+    .udp-hint { color: var(--text2); font-size: 12px; line-height: 1.7; overflow-wrap: anywhere; }
+    .udp-counts { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0; }
+    .udp-count { border:1px solid var(--line); padding:6px 10px; border-radius:12px; font-size:12px; }
+    .udp-count.udp-positive { color:var(--green); border-color:var(--green); font-weight:700; }
+    .udp-count.udp-attention { color:var(--red); border-color:var(--red); font-weight:700; background:rgba(255,69,58,.07); }
+    .udp-count.udp-zero { color:var(--text2); }
+    .record-table tr.udp-attention td { color:var(--red); background:rgba(255,69,58,.06); }
+    .record-table tr.udp-positive td { color:var(--green); }
+    .record-table tr.udp-zero td { color:var(--text2); }
+    #udpRows tr:not(.udp-attention) td:nth-child(3) { color:var(--green); }
+    .udp-paging { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:8px 0; }
+    .udp-paging select { width:auto; max-width:100%; }
+    .udp-paging label { display:inline-flex; gap:6px; align-items:center; font-size:12px; }
+    .udp-paging input[type="checkbox"] { width:16px; height:16px; }
+
+    #udpTraffic { width:100%; height:180px !important; display:block; }
+    .udp-details { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px; margin-top:12px; }
+    .udp-details > div { min-width:0; }
+    #udpEvents { max-height:270px; overflow:auto; font-size:12px; line-height:1.7; }
+    .udp-table { max-height:300px; overflow:auto; }
+    @media(max-width:700px) { .udp-summary { grid-template-columns:repeat(2,minmax(0,1fr)); } .udp-details { grid-template-columns:minmax(0,1fr); } }
+  </style>
+<style>
+body{background:var(--bg0)}body[data-theme=light]{--bg0:#f4f6fa;--text0:#17233a;--text2:#748298;--green:#14865c;--red:#d33f4d;--shadow-soft:0 3px 12px #20335206}header{background:var(--bg1)}main,.nav{max-width:1680px}main{padding:24px 28px 36px}.hero{display:none}.nav{padding:14px 28px}.header-actions{flex-wrap:wrap}button{border-radius:9px;padding:8px 12px;font-size:12px}button:focus-visible,summary:focus-visible{outline:3px solid #8ab8ff;outline-offset:3px}.p-health{display:flex;gap:16px;font-size:11px;color:var(--text2);flex-wrap:wrap}.p-health span{white-space:nowrap}.p-heading{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:18px}.p-heading h2{font-size:24px;margin:0 0 6px}.p-muted{font-size:12px;color:var(--text2);line-height:1.6}.p-actions{display:flex;gap:8px;flex-wrap:wrap}.p-cards{display:grid;grid-template-columns:1fr 1.18fr 1fr;gap:16px}.p-card,.p-panel{background:var(--bg1);border:1px solid var(--line);border-radius:18px;min-width:0;padding:22px 24px;box-shadow:var(--shadow-soft)}.p-card.p-accent{border-top:3px solid var(--accent);padding-top:20px}.p-row{display:flex;justify-content:space-between;align-items:center;gap:12px}.p-label{font-size:11px;color:var(--text2);letter-spacing:.04em}.p-tag{font-size:11px;padding:4px 8px;background:var(--bg0);border-radius:6px;white-space:nowrap}.p-value{font-size:38px;font-weight:700;letter-spacing:-.035em;margin:15px 0 6px;line-height:1.2;font-variant-numeric:tabular-nums}.p-big{font-size:44px}.p-meta{display:flex;justify-content:space-between;gap:10px;border-top:1px solid var(--line);padding-top:12px;margin-top:16px;font-size:11px;color:var(--text2)}.p-evidence{display:flex;gap:24px;margin-top:13px}.p-evidence small{display:block;font-size:10px;color:var(--text2)}.p-evidence strong{font-size:14px}.p-notice{margin:15px 0 18px;padding:12px 16px;border:1px solid var(--line);border-left:4px solid var(--text2);border-radius:10px;display:flex;justify-content:space-between;gap:16px;align-items:center;background:var(--bg1);font-size:12px;line-height:1.6}.p-notice[data-tone=good]{border-left-color:var(--green)}.p-notice[data-tone=warn]{border-left-color:#b16a08}.p-notice[data-tone=bad]{border-left-color:var(--red)}.p-notice strong{margin-right:8px}.p-notice time{white-space:nowrap;font-variant-numeric:tabular-nums}.p-grid{display:grid;grid-template-columns:1.55fr 1fr;gap:16px}.p-panel h3{margin:0;font-size:14px}.p-sub{margin:4px 0 0;font-size:11px;color:var(--text2)}.p-seg{display:flex;gap:2px;padding:3px;background:var(--bg0);border-radius:9px}.p-seg button{border:0;background:transparent;box-shadow:none;color:var(--text2);padding:5px 10px;font-size:11px}.p-seg button[aria-pressed=true]{background:var(--bg1);color:var(--accent);box-shadow:0 1px 5px #28455a15}#pChart{display:block;width:100%;height:245px !important;margin-top:14px}.p-chart-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:10px;font-size:10px;color:var(--text2)}.p-range{display:flex;flex-direction:column;align-items:flex-end;gap:5px}.p-legend{display:flex;gap:10px;flex-wrap:wrap}.p-legend b{display:inline-block;width:12px;height:3px;background:var(--accent);margin-right:4px;vertical-align:middle}.p-legend .p-filter{background:#9c70cc}.p-legend .p-reject{background:var(--red)}.p-count-head{margin:18px 0;font-size:29px;font-weight:650}.p-count-head small{font-size:11px;font-weight:400;color:var(--text2)}.p-bars{display:grid;gap:12px}.p-bar-row{display:grid;grid-template-columns:95px minmax(20px,1fr) 85px;align-items:center;gap:12px;font-size:11px}.p-bar-row>span:last-child{text-align:right;font-variant-numeric:tabular-nums}.p-track{height:5px;background:var(--bg0);border-radius:4px;overflow:hidden}.p-track i{display:block;height:100%;background:var(--green)}.p-quality-foot{margin-top:20px;padding-top:12px;border-top:1px solid var(--line)}.p-events{margin:16px 0}.p-event-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:16px}.p-event{border-left:2px solid var(--accent);padding-left:12px;min-width:0}.p-event small{font-size:10px;color:var(--text2)}.p-event strong{font-size:12px;display:block;margin:3px 0}.p-event p{font-size:11px;color:var(--text2);margin:0;overflow-wrap:anywhere}.p-details{background:var(--bg1);border:1px solid var(--line);border-radius:14px;margin:10px 0;scroll-margin-top:100px;min-width:0}.p-details>summary{cursor:pointer;padding:16px 20px;font-size:13px;font-weight:600}.p-detail-body{padding:0 18px 18px;min-width:0}.p-detail-body .panel{box-shadow:none}.p-detail-body .cards{grid-template-columns:repeat(3,minmax(0,1fr))}.p-details .table-wrap{max-width:100%;overflow:auto}#pConnection .controls{margin:0}.p-good{color:var(--green)}.p-bad{color:var(--red)}.p-warn{color:#b16a08}.p-neutral{color:var(--text2)}#pDetailsArea{margin-top:18px}.p-source{border:1px solid var(--line);background:var(--bg1);padding:8px 12px;border-radius:8px;font-size:11px;color:var(--text2);margin-bottom:14px}.p-footer{font-size:11px;color:var(--text2);margin:20px 0}.p-detail-body .udp-panel{margin-top:0}.p-detail-body .udp-details{grid-template-columns:1fr}#pChartTip{min-height:17px;font-size:11px;color:var(--text2);margin-top:8px}.p-link{color:var(--accent);border:0;background:transparent;font-size:11px}body.p-focus #pDetailsArea,body.p-focus .p-heading,body.p-focus .p-footer{display:none}body.p-focus .p-cards{margin-top:0}
+@media(max-width:1100px){.p-health{display:none}.p-card,.p-panel{padding:18px}.p-value{font-size:30px}.p-big{font-size:36px}.p-grid{grid-template-columns:1.25fr 1fr}.p-bar-row{grid-template-columns:84px 1fr 70px;gap:7px}.p-heading{align-items:flex-start;flex-direction:column}.nav .brand small{display:none}}
+@media(max-width:760px){main{padding:18px 16px}.nav{padding:12px 16px;flex-wrap:wrap}.nav .header-actions{gap:5px}.p-cards,.p-grid{grid-template-columns:1fr}.p-heading h2{font-size:21px}.p-event-grid{grid-template-columns:1fr}.p-notice{align-items:flex-start;flex-direction:column;gap:6px}.p-detail-body .cards{grid-template-columns:1fr}.p-detail-body{padding:0 10px 12px}.p-card{padding:20px}.p-value{font-size:36px}#pChart{height:225px !important}.p-evidence{gap:16px}.p-bar-row{grid-template-columns:90px 1fr 90px}#pChartTip{overflow-wrap:anywhere}}
+</style>
+<style>.p-precision-values{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;margin:20px 0}.p-precision-values small{display:block;font-size:11px;color:var(--text2)}.p-precision-values strong{display:block;font-size:23px;margin-top:6px;font-variant-numeric:tabular-nums}@media(max-width:760px){.p-precision-values{grid-template-columns:repeat(2,minmax(0,1fr))}.p-precision-values strong{font-size:20px}}</style>
+<style>.p-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.p-grid{grid-template-columns:minmax(0,1fr)}#pUdp .p-detail-body>article{margin-bottom:14px}@media(max-width:760px){.p-cards{grid-template-columns:minmax(0,1fr)}}</style>
+</head>
+<body data-theme="light">
+  <header>
+    <div class="nav">
+      <div class="brand">
+        <div class="mark">PTP</div>
+        <div>
+          <h1>DUT PTP 串口时间分析仪</h1>
+          <small>Web 串口 · 四时间戳 · 延时与偏移</small>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="themeButton">深色模式</button>
+        <button id="exportButton">导出 CSV</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-card">
+        <p class="eyebrow">硬件时间戳监测</p>
+        <h2>读取 DUT 串口日志，提取 PTP 四时间戳，实时观察延时与偏移。</h2>
+        <p>
+          连接 DUT 串口后，页面会解析 compact PTP 交换日志，提取 t1/t2/t3/t4，并实时绘制平均路径延时、原始偏移与校准后偏移曲线。整个工具为单文件网页，本地浏览器即可运行。
+        </p>
+        <div class="pill-row">
+          <span class="pill"><span id="serialDot" class="dot"></span><span id="serialState">串口空闲</span></span>
+          <span class="pill"><span id="parserDot" class="dot warn"></span><span id="parserState">等待 PTP 数据</span></span>
+          <span class="pill"><span class="dot ok"></span><span>可导出 CSV</span></span>
+        </div>
+      </div>
+      <div class="side-card">
+        <div>
+          <h3>解析内容</h3>
+          <p class="hint">
+            优先解析： <code>[ptp-ts ] cycle=...,t1=...,t2=...,t3=...,t4=...,delay_ns=...,offset_raw_ns=...,offset_cal_ns=...,offset_ns=...</code>。
+            页面会把 <strong>最新偏移</strong> 定义为<strong>校准后偏移</strong>（offset_ns），并同时显示原始偏移与校准值；旧格式日志仍可兼容解析。
+          </p>
+        </div>
+        <div class="pill-row">
+          <span class="pill">t1 Sync 发送</span>
+          <span class="pill">t2 Sync 接收</span>
+          <span class="pill">t3 Delay_Req 发送</span>
+          <span class="pill">t4 Delay_Req 接收</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="controls">
+      <div class="panel serial-panel">
+        <h3>串口连接</h3>
+        <div class="grid-3">
+          <div>
+            <label for="baudRate">波特率</label>
+            <select id="baudRate">
+              <option>9600</option>
+              <option>57600</option>
+              <option selected>115200</option>
+              <option>230400</option>
+              <option>460800</option>
+              <option>921600</option>
+              <option>1000000</option>
+              <option>2000000</option>
+            </select>
+          </div>
+          <div>
+            <label for="lineEnding">发送换行符</label>
+            <select id="lineEnding">
+              <option value="none">无</option>
+              <option value="n" selected>LF</option>
+              <option value="r">CR</option>
+              <option value="rn">CRLF</option>
+            </select>
+          </div>
+          <div>
+            <label for="maxPoints">数据缓存上限</label>
+            <select id="maxPoints">
+              <option value="1000">1,000 点</option>
+              <option value="5000">5,000 点</option>
+              <option value="10000">10,000 点</option>
+              <option value="50000" selected>50,000 点 · 推荐</option>
+              <option value="100000">100,000 点</option>
+              <option value="200000">200,000 点</option>
+            </select>
+          </div>
+          <div>
+            <label for="initialViewPoints">图表默认显示</label>
+            <select id="initialViewPoints">
+              <option value="all" selected>显示全部缓存</option>
+              <option value="1000">最近 1,000 点</option>
+              <option value="5000">最近 5,000 点</option>
+              <option value="10000">最近 10,000 点</option>
+              <option value="50000">最近 50,000 点</option>
+            </select>
+          </div>
+          <div>
+            <label for="drawQuality">绘图密度</label>
+            <select id="drawQuality">
+              <option value="1200">快速 · 1,200 点</option>
+              <option value="3000" selected>均衡 · 3,000 点</option>
+              <option value="6000">精细 · 6,000 点</option>
+              <option value="12000">论文观察 · 12,000 点</option>
+            </select>
+          </div>
+          <div>
+            <label for="uiFps">界面刷新率</label>
+            <select id="uiFps">
+              <option value="2">2 FPS · 最省资源</option>
+              <option value="5" selected>5 FPS · 推荐</option>
+              <option value="10">10 FPS · 高频观察</option>
+              <option value="20">20 FPS · 高性能电脑</option>
+            </select>
+          </div>
+          <div>
+            <label for="rawLogLimit">原始日志显示</label>
+            <select id="rawLogLimit">
+              <option value="0">暂停显示 · 最流畅</option>
+              <option value="20000">最近 20 KB</option>
+              <option value="60000" selected>最近 60 KB</option>
+              <option value="150000">最近 150 KB</option>
+            </select>
+          </div>
+          <div>
+            <label for="parseBudget">解析预算</label>
+            <select id="parseBudget">
+              <option value="3">轻量 · 3ms/帧</option>
+              <option value="8" selected>均衡 · 8ms/帧</option>
+              <option value="14">高吞吐 · 14ms/帧</option>
+            </select>
+          </div>
+        </div>
+        <div class="buttons" style="margin-top: 14px;">
+          <button class="primary" id="connectButton">连接串口</button>
+          <button id="disconnectButton" disabled>断开连接</button>
+          <button id="clearButton">清空</button>
+          <button id="sampleButton">加载示例日志</button>
+        </div>
+        <p class="hint">
+          Web Serial 需要 Chrome 或 Edge，通常要求 HTTPS 或 localhost。长时间测试时建议缓存 50,000 点以上；页面会自动抽样绘图，避免因数据量大而卡死。10Hz 或更高输出时，建议使用 5 FPS 刷新率，并把原始日志限制在最近 60KB 或暂停显示。
+        </p>
+      </div>
+
+      <div class="panel send-panel">
+        <h3>发送命令</h3>
+        <label for="sendText">发送到 DUT 的文本</label>
+        <input id="sendText" placeholder="可选命令，例如 status" />
+        <div class="buttons" style="margin-top: 12px;">
+          <button id="sendButton" disabled>发送</button>
+          <button id="sendCtrlCButton" disabled>发送 Ctrl-C</button>
+        </div>
+        <p class="hint">发送命令为可选功能；本页面只依赖 DUT 串口输出，不要求 DUT 支持额外命令协议。</p>
+      </div>
+    </section>
+
+    <section class="cards">
+      <div class="metric" id="recordsCard">
+        <div class="name">记录数</div>
+        <div class="value" id="recordCount">0</div>
+        <div class="sub">已解析的 PTP 交换</div>
+      </div>
+      <div class="metric" id="delayCard">
+        <div class="name">最新延时</div>
+        <div class="value" id="latestDelay">—</div>
+        <div class="sub" id="latestDelaySub">mean_path_delay（平均路径延时）</div>
+      </div>
+      <div class="metric" id="offsetCard">
+        <div class="name">最新校准后偏移</div>
+        <div class="value" id="latestOffset">—</div>
+        <div class="sub" id="latestOffsetSub">offset_from_master（补偿后主从时钟偏差）</div>
+      </div>
+      <div class="metric" id="rawOffsetCard">
+        <div class="name">最新原始偏移</div>
+        <div class="value" id="latestRawOffset">—</div>
+        <div class="sub" id="latestRawOffsetSub">由四时间戳或旧格式日志恢复的原始偏移</div>
+      </div>
+      <div class="metric" id="calCard">
+        <div class="name">当前校准值</div>
+        <div class="value" id="latestCal">—</div>
+        <div class="sub" id="latestCalSub">PTP_OFFSET_CAL_NS / offset_cal_ns</div>
+      </div>
+      <div class="metric status-cluster" id="statusCluster" aria-label="PTP 时钟与锁定状态">
+        <div class="status-unit" id="timeQualityCard">
+          <div class="name">PTP 时间质量</div>
+          <div class="value" id="latestTimeQuality">未知</div>
+          <div class="sub" id="latestTimeQualitySub">未上报时间质量</div>
+        </div>
+        <div class="status-unit" id="readyCard">
+          <div class="name">普通锁定</div>
+          <div class="value" id="latestReady">—</div>
+          <div class="sub" id="latestReadySub">尚无锁定状态</div>
+        </div>
+        <div class="status-unit" id="lockCard">
+          <div class="name">精细锁定</div>
+          <div class="value" id="latestLock">—</div>
+          <div class="sub" id="latestFineSub">尚无锁定状态</div>
+        </div>
+        <div class="sub status-detail" id="latestSeq">暂无序列号</div>
+        <div class="sub status-detail" id="latestQuality">测量质量：未上报，参与情况未知</div>
+      </div>
+    </section>
+
+    <section class="t-grid">
+      <div class="time-card"><strong>t1 · Observer 发送 Sync 的 SFD 时刻</strong><code id="t1Value">—</code><span id="t1Dec">—</span></div>
+      <div class="time-card"><strong>t2 · DUT 接收 Sync 的 SFD 时刻</strong><code id="t2Value">—</code><span id="t2Dec">—</span></div>
+      <div class="time-card"><strong>t3 · DUT 发送 Delay_Req 的 SFD 时刻</strong><code id="t3Value">—</code><span id="t3Dec">—</span></div>
+      <div class="time-card"><strong>t4 · Observer 接收 Delay_Req 的 SFD 时刻</strong><code id="t4Value">—</code><span id="t4Dec">—</span></div>
+    </section>
+
+    <section class="panel" id="serialEventPanel" style="margin-top:18px;">
+      <h3>锁定与恢复记录</h3>
+      <div class="udp-controls"><button id="serialEventsExport" title="刷新或清空串口数据会清零，请先导出需要的记录">导出事件 CSV</button><button id="serialStatsExport">导出统计 CSV</button><button id="serialEventsReset" title="只清零网页事件统计，不复位开发板">清零事件统计</button><span class="udp-hint" id="serialEventSummary">尚未收到状态事件</span></div>
+      <div class="udp-details">
+        <div class="table-wrap"><table class="record-table"><thead><tr><th>时间质量</th><th>含义</th><th title="按状态变化计数，含首次观测；重复心跳不重复计入">观测次数</th></tr></thead><tbody id="serialQualityCounts"></tbody></table>
+          <div class="udp-counts" id="serialActionCounts"></div>
+        </div>
+        <div class="table-wrap udp-table"><table class="record-table"><thead><tr><th title="实时日志为接收时间，导入日志为本次解析时间">接收／解析时间</th><th>事件</th><th>变化／说明</th></tr></thead><tbody id="serialEventRows"></tbody></table></div>
+      </div>
+    </section>
+
+    <section class="panel udp-panel" id="udpPanel">
+      <h3>UDP 采集数据 · 逐包时间质量</h3>
+      <div class="udp-hint">串口显示校时过程；这里检查真正收到的采集数据包。LOCKED 是包首锁存的普通同步状态，不能替代偏差测量。</div>
+      <div class="udp-controls">
+        <button class="primary" id="udpStart">开始 UDP 记录</button>
+        <button id="udpStop">停止并保存</button>
+        <button id="udpLive">查看实时</button>
+        <button id="udpDownload">导出 UDP CSV</button>
+      </div>
+      <div class="udp-controls">
+        <select id="udpArchive" aria-label="UDP历史记录"><option value="">选择历史 UDP 记录</option></select>
+        <button id="udpRefresh">刷新记录列表</button>
+        <button id="udpLoad">分析所选记录</button>
+      </div>
+      <div class="udp-hint" id="udpMessage" role="status">双击工程目录的“启动整合上位机.cmd”，即可在本页面接收和分析 UDP。直接打开 HTML 仍可使用串口。</div>
+      <div class="udp-summary">
+        <div class="udp-tile"><small>收到的包数</small><strong id="udpTotal">0</strong></div>
+        <div class="udp-tile"><small>收包状态</small><strong id="udpStatus">未开始</strong></div>
+        <div class="udp-tile"><small>最近包率</small><strong id="udpRate">—</strong></div>
+        <div class="udp-tile"><small>最后一包质量</small><strong id="udpQuality">—</strong></div>
+      </div>
+      <div class="udp-counts" id="udpCounts"></div>
+      <div class="udp-hint" id="udpDiagnostics">尚无 UDP 数据</div>
+      <div class="udp-hint" id="udpCompare">串口与 UDP 各自记录状态，断流本身不等于 INVALID。</div>
+      <canvas id="udpTraffic" aria-label="UDP每秒收包数"></canvas>
+      <div class="udp-details">
+        <div><h3>断流／质量／序号事件</h3><div id="udpEvents">暂无事件</div></div>
+        <div><h3>UDP 包明细</h3>
+          <div class="udp-paging"><label><input type="checkbox" id="udpOnlyAttention">只看关注状态</label><select id="udpPageSize" aria-label="UDP每页行数"><option value="50">每页50条</option><option value="100">每页100条</option><option value="200">每页200条</option></select></div>
+          <div class="udp-paging"><button id="udpPagePrev">上一页</button><button id="udpPageNext">下一页</button><button id="udpRowsLive">回到最新</button><span class="udp-hint" id="udpPageInfo">尚无记录</span></div>
+          <div class="table-wrap udp-table"><table class="record-table">
+          <thead><tr><th>电脑收包时间</th><th>序号</th><th>时间质量</th><th>时间戳（原始整数）</th><th>处理</th></tr></thead>
+          <tbody id="udpRows"></tbody>
+        </table></div></div>
+      </div>
+      <div class="udp-hint">最近包和非LOCKED关注包各独立缓存最多2000条；关注记录不会被后续正常包挤掉。翻页时冻结列表，累计计数与后台记录继续；点击“回到最新”恢复列表更新。表格高度固定，完整逐包记录保存在 captures 文件夹。停止后再导出；关闭浏览器标签页不会停止后台记录。断流事件按电脑收包间隔 ≥1 秒识别，不代表已证明停流原因。</div>
+    </section>
+
+    <section class="charts">
+      <div class="chart-card">
+        <div class="chart-title"><h3>延时曲线</h3><small>delay_ns / 滤波延时，X轴=数据序号；Y轴=自动 ns/µs/ms；滚轮缩放已限幅，点击取坐标，拖拽平移</small></div>
+        <canvas id="delayCanvas" width="1700" height="760" aria-label="延时曲线"></canvas>
+        <div class="chart-tools">
+          <span class="chart-info" id="delayInfo">提示：滚轮缩放，点击图表读取坐标。</span>
+          <button class="chart-mini-button" id="delayResetZoom">重置缩放</button>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title"><h3>偏移曲线</h3><small>offset_raw_ns / offset_ns / filt_offset_ns，X轴=数据序号；Y轴=自动 ns/µs/ms；滚轮缩放已限幅，点击取坐标，拖拽平移</small></div>
+        <canvas id="offsetCanvas" width="1700" height="760" aria-label="偏移曲线"></canvas>
+        <div class="chart-tools">
+          <span class="chart-info" id="offsetInfo">提示：滚轮缩放，点击图表读取坐标。</span>
+          <button class="chart-mini-button" id="offsetResetZoom">重置缩放</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="log-layout">
+      <div class="panel">
+        <h3>原始串口日志</h3>
+        <div class="logbox" id="rawLog"></div>
+      </div>
+      <div class="panel">
+        <h3>最近解析记录</h3>
+        <div class="table-wrap">
+          <table class="record-table">
+            <thead>
+              <tr><th>周期</th><th>DReq</th><th>延时</th><th>校准后偏移</th><th>原始偏移</th><th>锁定</th><th>测量 / 校时</th></tr>
+            </thead>
+            <tbody id="recordTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" style="margin-top: 16px;">
+      <h3>粘贴日志解析</h3>
+      <textarea id="pasteArea" placeholder="在这里粘贴 DUT UART 文本，然后点击“解析粘贴日志”..."></textarea>
+      <div class="buttons" style="margin-top: 12px;">
+        <button class="primary" id="parsePasteButton">解析粘贴日志</button>
+        <button id="appendPasteButton">追加解析日志</button>
+      </div>
+    </section>
+
+    <div class="footer">
+      DUT PTP 串口时间分析仪 · 单文件 HTML · Web Serial API · 本地 Canvas 绘图 · 高频串口优化版
+    </div>
+  </main>
+
+  <script>
+    "use strict";
+
+    const demoLog = `[ptp-rx] type=Sync(0) seq=4741 rx_ts=0x0000006e_5d19f2fc msg_ts=0x0000_00000000_00000000 req_port=0x0000_00000000_00000000
+[ptp   ] Sync accepted: seq=4741, t2=0x0000006e_5d19f2fc
+[ptp-rx] type=Follow_Up(8) seq=4741 rx_ts=0x00000000_00000000 msg_ts=0x0000_000001da_007fdfe8 req_port=0x0000_00000000_00000000
+[ptp   ] Follow_Up matched: sync_seq=4741 delay_req_seq=2137 t1=0x0000006e_5d19e3e8
+[ptp   ] Delay_Req sent: seq=2137, t3=0x0000006e_60769be0
+[ptp-rx] type=Delay_Resp(9) seq=2137 rx_ts=0x00000000_00000000 msg_ts=0x0000_000001da_03dd1be8 req_port=0x000a_3501fec0_00010001
+[ptp   ] Delay_Resp matched: seq=2137, t4=0x0000006e_60771fe8
+[servo ] cycle=1477 d1=3860 ns d2=33800 ns delay=18830 ns filt_delay=18860 ns delay_slope=-74 ns offset_raw=-14970 ns offset_cal=-11000 ns offset=-3970 ns filt_offset=-4002 ns mode=FREQ step=0 ns phase_ppb=625 drift_ppb=-50 raw_ppb=625 freq_ppb=782 cur_time=0x0000006e_62ce544e lock=1 streak=1475 delay_ok=1 drift_ok=1 stream=0 reject=1 holdoff=0
+[ptp-ts ] cycle=1477,sync_seq=4741,delay_req_seq=2137,t1=0x0000006e_5d19e3e8,t2=0x0000006e_5d19f2fc,t3=0x0000006e_60769be0,t4=0x0000006e_60771fe8,d1_ns=3860,d2_ns=33800,delay_ns=18830,offset_raw_ns=-14970,offset_cal_ns=-11000,offset_ns=-3970,filt_offset_ns=-4002,drift_ppb=-20,freq_ppb=782,lock=1,streak=1475
+[ptp-ts ] cycle=1478,sync_seq=4742,delay_req_seq=2138,t1=0x0000006e_630fcbd0,t2=0x0000006e_630fdb22,t3=0x0000006e_686c27ba,t4=0x0000006e_686cac18,d1_ns=3922,d2_ns=33886,delay_ns=18904,offset_raw_ns=-14982,offset_cal_ns=-11000,offset_ns=-3982,filt_offset_ns=-4000,drift_ppb=-20,freq_ppb=995,lock=1,streak=1476`;
+
+    const state = {
+      inputMode: 'idle', presentationRevision: 0,
+      port: null,
+      reader: null,
+      inputDone: null,
+      keepReading: false,
+      rawRemainder: "",
+      rawText: "",
+      records: [],
+      seen: new Set(),
+      recordKeyToIndex: new Map(),
+      syncBySeq: new Map(),
+      exchangeByDelaySeq: new Map(),
+      lastDelayReqSeq: null,
+      lastCompletedSeq: null,
+      pendingPtpTs: "",
+      parseErrors: 0,
+      lineQueue: [],
+      lineCursor: 0,
+      parserScheduled: false,
+      renderScheduled: false,
+      lastRenderMs: 0,
+      rawAppendBuffer: "",
+      rawFlushScheduled: false,
+      rawLastFlushMs: 0,
+      receivedBytes: 0,
+      processedLines: 0,
+      recordDirty: false,
+      derivedDirty: true,
+      recordsDropped: 0,
+      lastPruneAt: 0,
+      clockStatus: null,
+      heartbeatBarrierCycle: null
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    function setStatus(kind, text) {
+      const dot = kind === "serial" ? $("serialDot") : $("parserDot");
+      const label = kind === "serial" ? $("serialState") : $("parserState");
+      label.textContent = text;
+      dot.className = "dot";
+      if (/connected|parsed|running|ready|ok|已连接|已解析|可导出|正常/i.test(text)) dot.classList.add("ok");
+      else if (/error|bad|unsupported|failed|失败|不支持|错误/i.test(text)) dot.classList.add("bad");
+      else dot.classList.add("warn");
+    }
+
+    function normalizeLogLine(line) {
+      return String(line || "")
+        .replace(/^\s*\[\d{4}-\d{2}-\d{2}[^\]]*\]\s*#\s*RECV\s+ASCII>\s*/i, "")
+        .replace(/^\s*#\s*RECV\s+ASCII>\s*/i, "")
+        .trim();
+    }
+
+    function cleanHex(hex) {
+      if (!hex) return "";
+      return hex.replace(/^0x/i, "").replace(/_/g, "").trim().toLowerCase();
+    }
+
+    function hexToBigInt(hex) {
+      const h = cleanHex(hex);
+      if (!h) return null;
+      return BigInt("0x" + h);
+    }
+
+    function formatHex64(hexOrBig) {
+      if (hexOrBig === null || hexOrBig === undefined || hexOrBig === "") return "—";
+      let h;
+      if (typeof hexOrBig === "bigint") h = hexOrBig.toString(16);
+      else h = cleanHex(hexOrBig);
+      h = h.padStart(16, "0");
+      return "0x" + h.slice(0, 8) + "_" + h.slice(8);
+    }
+
+    function formatInteger(value) {
+      if (value === null || value === undefined || Number.isNaN(value)) return "—";
+      return Number(value).toLocaleString("zh-CN");
+    }
+
+    function formatNs(value) {
+      if (value === null || value === undefined || Number.isNaN(value)) return "—";
+      const abs = Math.abs(value);
+      if (abs >= 1e6) return `${(value / 1e6).toFixed(3)} ms`;
+      if (abs >= 1e3) return `${(value / 1e3).toFixed(3)} µs`;
+      return `${value} ns`;
+    }
+
+    function extractInt(text, key) {
+      const re = new RegExp(`${key}=(-?\\d+)`);
+      const m = text.match(re);
+      return m ? Number(m[1]) : null;
+    }
+
+    function extractHex(text, key) {
+      const re = new RegExp(`${key}=(0x[0-9a-fA-F_]+)`);
+      const m = text.match(re);
+      return m ? m[1] : null;
+    }
+
+    function parseKeyValues(text) {
+      const out = {};
+      const re = /([A-Za-z0-9_]+)=([^\s,]+)/g;
+      let m;
+      while ((m = re.exec(text)) !== null) out[m[1]] = m[2];
+      return out;
+    }
+
+    function extractIntFromMap(map, key) {
+      if (!map || !Object.prototype.hasOwnProperty.call(map, key)) return null;
+      const n = Number(map[key]);
+      return Number.isFinite(n) ? n : null;
+    }
+
+    function extractHexFromMap(map, key) {
+      if (!map || !Object.prototype.hasOwnProperty.call(map, key)) return null;
+      return map[key];
+    }
+
+    function assignIfFinite(target, key, value) {
+      if (value !== null && value !== undefined && Number.isFinite(value)) target[key] = value;
+    }
+
+    function safeDiff(a, b) {
+      if (a === null || b === null) return null;
+      return a - b;
+    }
+
+    function computeDelayOffset(record) {
+      try {
+        const t1 = hexToBigInt(record.t1);
+        const t2 = hexToBigInt(record.t2);
+        const t3 = hexToBigInt(record.t3);
+        const t4 = hexToBigInt(record.t4);
+        if ([t1, t2, t3, t4].some(v => v === null)) return;
+        const d21 = safeDiff(t2, t1);
+        const d43 = safeDiff(t4, t3);
+        if (d21 === null || d43 === null) return;
+        const delay = (d21 + d43) / 2n;
+        const rawOffset = d21 - delay;
+        const rawOffsetNum = Number(rawOffset);
+        const delayNum = Number(delay);
+        if (!isFiniteNumber(record.d1_ns)) record.d1_ns = Number(d21);
+        if (!isFiniteNumber(record.d2_ns)) record.d2_ns = Number(d43);
+        if (!isFiniteNumber(record.delay_ns)) record.delay_ns = delayNum;
+        if (!isFiniteNumber(record.offset_raw_ns)) record.offset_raw_ns = rawOffsetNum;
+        if (!isFiniteNumber(record.offset_cal_ns)) record.offset_cal_ns = 0;
+        if (!isFiniteNumber(record.offset_ns)) record.offset_ns = rawOffsetNum - (record.offset_cal_ns || 0);
+      } catch (err) {
+        state.parseErrors++;
+      }
+    }
+
+    function makeRecordKey(r) {
+      // Accepted-cycle counters can repeat on rejection; four timestamps identify
+      // the exchange across reconstructed, servo and compact reports and seq wrap.
+      return [r.t1, r.t2, r.t3, r.t4].map(t => cleanHex(t).padStart(16, "0")).join("|");
+    }
+
+    function mergeOrAddRecord(record, source) {
+      if (!record) return;
+      computeDelayOffset(record);
+      if (!record.t1 || !record.t2 || !record.t3 || !record.t4) return;
+      const key = makeRecordKey(record);
+
+      // 高频串口下，同一次 PTP exchange 可能先由 servo/分散日志重组，
+      // 随后又由 [ptp-ts] 完整行补齐。这里合并非空字段，避免滤波值丢失。
+      if (state.recordKeyToIndex.has(key)) {
+        const idx = state.recordKeyToIndex.get(key);
+        const oldRecord = state.records[idx];
+        if (oldRecord) {
+          for (const [k, v] of Object.entries(record)) {
+            if (v !== null && v !== undefined && v !== "") oldRecord[k] = v;
+          }
+          if (source && !String(oldRecord.source || "").includes(source)) oldRecord.source = `${oldRecord.source || ""}+${source}`.replace(/^\+/, "");
+          computeDelayOffset(oldRecord);
+          state.presentationRevision++;
+          state.derivedDirty = true;
+          state.recordDirty = true;
+          scheduleUiUpdate();
+        }
+        return;
+      }
+
+      record.source = source || 'serial';
+      record.input_mode=state.inputMode; record.observed_ms=Date.now(); state.presentationRevision++;
+      record.created_at = new Date().toISOString();
+      state.records.push(record);
+      state.recordKeyToIndex.set(key, state.records.length - 1);
+      state.seen.add(key);
+      trimRecordCacheIfNeeded();
+      state.derivedDirty = true;
+      state.recordDirty = true;
+      scheduleUiUpdate();
+    }
+
+    function rebuildRecordIndex() {
+      state.recordKeyToIndex.clear();
+      state.seen.clear();
+      state.records.forEach((r, i) => {
+        const key = makeRecordKey(r);
+        state.recordKeyToIndex.set(key, i);
+        state.seen.add(key);
+      });
+    }
+    function isFiniteNumber(v) {
+      return typeof v === "number" && Number.isFinite(v);
+    }
+
+    // 为绘图补齐衍生序列。
+    // DUT 的 [ptp-ts] 行通常没有 filt_delay_ns，真正的 filt_delay 在 [servo] 行。
+    // 当串口拆行或重启导致 servo 行未能及时合并时，这里用轻量 IIR 生成
+    // filt_delay_plot_ns，确保紫色滤波延时曲线始终可见；若真实 filt_delay_ns
+    // 存在，则优先使用真实值。
+    function recomputeDerivedSeries() {
+      let filtDelay = null;
+      let filtOffset = null;
+      const alpha = 0.25;
+      for (const r of state.records) {
+        if (isFiniteNumber(r.filt_delay_ns)) {
+          filtDelay = r.filt_delay_ns;
+          r.filt_delay_plot_ns = r.filt_delay_ns;
+          r.filt_delay_estimated = 0;
+        } else if (r.sample_valid === 0) {
+          r.filt_delay_plot_ns = filtDelay;
+          r.filt_delay_estimated = 1;
+        } else if (isFiniteNumber(r.delay_ns)) {
+          filtDelay = (filtDelay === null) ? r.delay_ns : Math.round(filtDelay * (1 - alpha) + r.delay_ns * alpha);
+          r.filt_delay_plot_ns = filtDelay;
+          r.filt_delay_estimated = 1;
+        }
+
+        if (isFiniteNumber(r.filt_offset_ns)) {
+          filtOffset = r.filt_offset_ns;
+          r.filt_offset_plot_ns = r.filt_offset_ns;
+          r.filt_offset_estimated = 0;
+        } else if (r.sample_valid === 0) {
+          r.filt_offset_plot_ns = filtOffset;
+          r.filt_offset_estimated = 1;
+        } else if (isFiniteNumber(r.offset_ns)) {
+          filtOffset = (filtOffset === null) ? r.offset_ns : Math.round(filtOffset * (1 - alpha) + r.offset_ns * alpha);
+          r.filt_offset_plot_ns = filtOffset;
+          r.filt_offset_estimated = 1;
+        }
+        r.filt_delay_held = r.sample_valid === 0 ? 1 : 0;
+        r.filt_offset_held = r.sample_valid === 0 ? 1 : 0;
+      }
+      state.derivedDirty = false;
+    }
+
+    function startNewExchange(delaySeq) {
+      if (delaySeq === null || delaySeq === undefined) return null;
+      const key = String(delaySeq);
+      const ex = { delay_req_seq: Number(delaySeq), cycle: Number(delaySeq) };
+      state.exchangeByDelaySeq.set(key, ex);
+      return ex;
+    }
+
+    function getOrCreateExchange(delaySeq) {
+      if (delaySeq === null || delaySeq === undefined) return null;
+      const key = String(delaySeq);
+      if (!state.exchangeByDelaySeq.has(key)) {
+        state.exchangeByDelaySeq.set(key, { delay_req_seq: Number(delaySeq), cycle: Number(delaySeq) });
+      }
+      return state.exchangeByDelaySeq.get(key);
+    }
+
+    function tryCompleteExchange(delaySeq) {
+      const ex = getOrCreateExchange(delaySeq);
+      if (!ex) return;
+      if (ex.t1 && ex.t2 && ex.t3 && ex.t4 && (ex.delay_ns !== undefined || ex.offset_ns !== undefined)) {
+        mergeOrAddRecord({ ...ex }, "reconstructed");
+      }
+    }
+
+    const TIME_QUALITY_NAMES = Object.freeze({
+      INVALID: "时间无效", REACQUIRE: "重新捕获", LOCKED: "同步正常", HOLDOVER: "守时"
+    });
+    function isTimeQuality(value) {
+      return Object.prototype.hasOwnProperty.call(TIME_QUALITY_NAMES, value);
+    }
+    function resetClockStatus() {
+      state.clockStatus = { ready: null, fine_lock: null, ready_streak: null, fine_streak: null,
+        time_quality: null, time_quality_source: null, source: null, cycle: null, recovery: null,
+        staleMeasurement: false, staleCycle: null };
+      state.heartbeatBarrierCycle = null;
+    }
+    function updateClockStatus(kv, source = "measurement") {
+      if (!state.clockStatus) resetClockStatus();
+      const current = state.clockStatus;
+      const cycle = extractIntFromMap(kv, source === "heartbeat" ? "servo_cycles" : "cycle");
+      // A heartbeat can invalidate a previously locked exchange without a new
+      // servo row. Delayed reports for that exchange must not turn it green again.
+      if (source === "measurement" && state.heartbeatBarrierCycle !== null &&
+          cycle !== null && cycle <= state.heartbeatBarrierCycle) return;
+      let clockQuality = isTimeQuality(kv.time_quality) ? kv.time_quality : null;
+      if (source === "heartbeat" && !clockQuality && isTimeQuality(kv.quality)) clockQuality = kv.quality;
+      let ready = extractIntFromMap(kv, "ready");
+      if (ready === null) ready = extractIntFromMap(kv, "lock");
+      let fine = extractIntFromMap(kv, "fine_lock");
+      if (fine === null) fine = extractIntFromMap(kv, "fine");
+      if (ready !== 0 && ready !== 1) ready = null;
+      if (fine !== 0 && fine !== 1) fine = null;
+      if (clockQuality && clockQuality !== "LOCKED") { ready = 0; fine = 0; }
+      if (ready === 0 && fine === null) fine = 0;
+      if (ready !== null) current.ready = ready;
+      if (fine !== null) current.fine_lock = fine;
+      for (const key of ["ready_streak", "fine_streak"]) {
+        const value = extractIntFromMap(kv, key);
+        if (value !== null) current[key] = value;
+      }
+      if (ready === 0) current.ready_streak = 0;
+      if (fine === 0) current.fine_streak = 0;
+      if (clockQuality) {
+        current.time_quality = clockQuality;
+        current.time_quality_source = source;
+      }
+      // Losing the reference expires the displayed exchange. A LOCKED heartbeat
+      // alone cannot refresh it; wait for a newer accepted measurement.
+      if (clockQuality && clockQuality !== "LOCKED") {
+        current.staleMeasurement = true;
+        current.staleCycle = cycle ?? current.cycle;
+      } else if (source === "measurement" && current.time_quality === "LOCKED" &&
+          extractIntFromMap(kv, "sample_valid") !== 0 && cycle !== null &&
+          (current.staleCycle === null || cycle > current.staleCycle)) {
+        current.staleMeasurement = false;
+      }
+      if (kv.recovery) current.recovery = kv.recovery;
+      if (cycle !== null) current.cycle = cycle;
+      if (source === "heartbeat" && (cycle !== null || clockQuality)) state.heartbeatBarrierCycle = cycle ?? current.cycle;
+      if (ready !== null || fine !== null || clockQuality) current.source = source;
+      if(ready!==null || fine!==null || clockQuality){current.observed_ms=Date.now();current.input_mode=state.inputMode;}
+      observeSerialStatus(current, kv, source);
+    }
+    function renderClockStatus(last) {
+      if (!state.clockStatus) resetClockStatus();
+      const current = state.clockStatus;
+      const quality = current.time_quality;
+      $("latestTimeQuality").textContent = quality ? TIME_QUALITY_NAMES[quality] : "未知";
+      $("latestTimeQualitySub").textContent = quality
+        ? quality + (current.recovery ? ` · 恢复：${current.recovery}` : "")
+        : "未上报时间质量";
+      $("timeQualityCard").className = "status-unit" + (quality === "LOCKED" ? " good" : quality === "INVALID" ? " bad" : " warn");
+      $("latestReady").textContent = current.ready === 1 ? "已锁定" : current.ready === 0 ? "未锁定" : "—";
+      $("latestLock").textContent = current.fine_lock === 1 ? "已锁定" : current.fine_lock === 0 ? "未锁定" : "—";
+      $("readyCard").className = "status-unit" + (current.ready === 1 ? " good" : " warn");
+      $("lockCard").className = "status-unit" + (current.fine_lock === 1 ? " good" : " warn");
+      $("latestReadySub").textContent = `连续满足：${current.ready_streak ?? "—"}`;
+      $("latestFineSub").textContent = `连续满足：${current.fine_streak ?? "—"}`;
+      $("latestSeq").textContent = last
+        ? `cycle=${last.cycle ?? "—"}, sync=${last.sync_seq ?? "—"}, dreq=${last.delay_req_seq ?? "—"}`
+        : "暂无序列号";
+    }
+
+    // V17 reports ready/fine_lock; keep legacy lock logs readable as well.
+    function assignServoStatus(record, kv) {
+      for (const key of ["ready", "ready_streak", "fine_lock", "fine_streak", "bias_ppb", "bias_step_ppb", "direct_ppb", "target_ppb", "freeze", "delay_ok", "drift_ok", "sample_valid", "delay_ref_ns", "delay_margin_ns", "spike_count", "rebase_count"]) {
+        assignIfFinite(record, key, extractIntFromMap(kv, key));
+      }
+      if (kv.mode) record.mode = kv.mode;
+      if (kv.quality && !isTimeQuality(kv.quality)) record.quality = kv.quality;
+      if (isTimeQuality(kv.time_quality)) record.time_quality = kv.time_quality;
+      updateClockStatus(kv);
+      if (!record.time_quality && state.clockStatus.time_quality) record.time_quality = state.clockStatus.time_quality;
+      if (record.time_quality) record.time_quality_source = isTimeQuality(kv.time_quality) ? "measurement" : state.clockStatus.time_quality_source;
+      // Earlier compact V17 logs named the fine-lock flag "fine".
+      if (!Object.prototype.hasOwnProperty.call(kv, "fine_lock")) {
+        assignIfFinite(record, "fine_lock", extractIntFromMap(kv, "fine"));
+      }
+      if (isFiniteNumber(record.fine_lock)) {
+        record.lock = record.fine_lock;
+        record.lock_basis = "fine_lock";
+        assignIfFinite(record, "streak", record.fine_streak);
+      } else {
+        assignIfFinite(record, "lock", extractIntFromMap(kv, "lock"));
+        assignIfFinite(record, "streak", extractIntFromMap(kv, "streak"));
+      }
+    }
+
+    function measurementQualityText(record, brief = false) {
+      const labels = {
+        OK: "正常", PDV_SPIKE: "时延尖峰", PATH_REBASE: "路径重学",
+        DELAY_RANGE: "时延越界", DELAY_OUTLIER: "时延异常", DELAY_SLOPE: "时延突变"
+      };
+      const quality = record.quality
+        ? (Object.prototype.hasOwnProperty.call(labels, record.quality) ? labels[record.quality] : "未知状态")
+        : "未上报";
+      const participation = record.sample_valid === 0 ? "未参与" : (record.sample_valid === 1 ? "参与" : "未知");
+      return brief ? `${quality} · ${participation}` : `测量质量：${quality}，${participation === "未知" ? "参与情况未知" : participation + "校时"}`;
+    }
+
+    function parsePtpTsText(text) {
+      const normalized = text.replace(/\s+/g, " ").replace(/\s*=\s*/g, "=").trim();
+      const required = ["t1=", "t2=", "t3=", "t4=", "delay_ns="];
+      if (!required.every(k => normalized.includes(k))) return false;
+      if (!(normalized.includes("offset_ns=") || normalized.includes("offset_raw_ns="))) return false;
+      if (!(normalized.includes("lock=") || normalized.includes("freq_ppb=") || normalized.includes("filt_offset_ns="))) return false;
+      const kv = parseKeyValues(normalized);
+      const record = {
+        cycle: extractIntFromMap(kv, "cycle"),
+        sync_seq: extractIntFromMap(kv, "sync_seq"),
+        delay_req_seq: extractIntFromMap(kv, "delay_req_seq"),
+        t1: extractHexFromMap(kv, "t1"),
+        t2: extractHexFromMap(kv, "t2"),
+        t3: extractHexFromMap(kv, "t3"),
+        t4: extractHexFromMap(kv, "t4"),
+        d1_ns: extractIntFromMap(kv, "d1_ns"),
+        d2_ns: extractIntFromMap(kv, "d2_ns"),
+        delay_ns: extractIntFromMap(kv, "delay_ns"),
+        filt_delay_ns: extractIntFromMap(kv, "filt_delay_ns"),
+        offset_raw_ns: extractIntFromMap(kv, "offset_raw_ns"),
+        offset_cal_ns: extractIntFromMap(kv, "offset_cal_ns"),
+        offset_ns: extractIntFromMap(kv, "offset_ns"),
+        filt_offset_ns: extractIntFromMap(kv, "filt_offset_ns"),
+        drift_ppb: extractIntFromMap(kv, "drift_ppb"),
+        phase_ppb: extractIntFromMap(kv, "phase_ppb"),
+        raw_ppb: extractIntFromMap(kv, "raw_ppb"),
+        freq_ppb: extractIntFromMap(kv, "freq_ppb"),
+        lock: extractIntFromMap(kv, "lock"),
+        streak: extractIntFromMap(kv, "streak")
+      };
+      assignServoStatus(record, kv);
+      if (!isFiniteNumber(record.offset_raw_ns) && isFiniteNumber(record.offset_ns) && !Object.prototype.hasOwnProperty.call(kv, 'offset_cal_ns')) {
+        record.offset_raw_ns = record.offset_ns;
+        record.offset_cal_ns = 0;
+      }
+      computeDelayOffset(record);
+      const oldEx = record.delay_req_seq !== null ? state.exchangeByDelaySeq.get(String(record.delay_req_seq)) : null;
+      if (oldEx) {
+        if (!isFiniteNumber(record.filt_delay_ns) && isFiniteNumber(oldEx.filt_delay_ns)) record.filt_delay_ns = oldEx.filt_delay_ns;
+        if (!isFiniteNumber(record.filt_offset_ns) && isFiniteNumber(oldEx.filt_offset_ns)) record.filt_offset_ns = oldEx.filt_offset_ns;
+      }
+      mergeOrAddRecord(record, "ptp-ts");
+      return true;
+    }
+
+    const SERIAL_ACTION_NAMES = Object.freeze({
+      FINE_LOCKED:"精细锁定", FINE_LOST:"精锁退出", STREAM_STARTED:"采集启用", STREAM_STOPPED:"采集停止",
+      LINK_DOWN:"链路下降", LINK_UP:"稳定链路恢复", BOOT:"启动记录"
+    });
+    function getSerialEvents() {
+      if (!state.serialEvents) state.serialEvents = { entries:{LOCKED:0,HOLDOVER:0,INVALID:0,REACQUIRE:0},
+        keywords:{LOCKED:0,HOLDOVER:0,INVALID:0,REACQUIRE:0}, actions:{}, events:[], total:0, dropped:0,
+        lastQuality:null, lastFine:null, lastStream:null, dirty:true };
+      return state.serialEvents;
+    }
+    function addSerialEvent(kind, from, to, source, detail) {
+      const stats=getSerialEvents();
+      stats.events.push({observed_at:new Date().toISOString(),kind,from:from??"",to:to??"",source,detail,input_mode:state.inputMode});
+      stats.total++;stats.dirty=true;
+      scheduleUiUpdate();
+      if(stats.events.length>5000) {stats.events.shift();stats.dropped++;}
+    }
+    function serialBooleanEvent(key, value, source, explicit=false) {
+      if(value!==0 && value!==1)return;
+      const stats=getSerialEvents(), field=key==='fine'?'lastFine':'lastStream', previous=stats[field];
+      if(previous===value)return;
+      stats[field]=value;
+      if(previous===null && value===0 && !explicit)return;
+      const kind=key==='fine'?(value?'FINE_LOCKED':'FINE_LOST'):(value?'STREAM_STARTED':'STREAM_STOPPED');
+      stats.actions[kind]=(stats.actions[kind]||0)+1;
+      addSerialEvent(kind,previous,value,source,previous===null?'首次观测，不代表已测得恢复耗时':`${key==='fine'?'fine_lock':'stream'}：${previous} → ${value}`);
+    }
+    function observeSerialStatus(current, kv, source) {
+      const stats=getSerialEvents(), quality=current.time_quality;
+      if(quality && quality!==stats.lastQuality) {
+        const previous=stats.lastQuality??kv._quality_from??null;stats.lastQuality=quality;stats.entries[quality]++;
+        addSerialEvent('TIME_QUALITY',previous,quality,source,previous?`${previous} → ${quality}`:`首次观测 ${quality}`);
+      }
+      serialBooleanEvent('fine',current.fine_lock,source);
+      serialBooleanEvent('stream',extractIntFromMap(kv,'stream'),source);
+    }
+    function observeSerialWords(line) {
+      const stats=getSerialEvents();
+      const words=new Set(line.match(/\b(?:LOCKED|HOLDOVER|INVALID|REACQUIRE)\b/g)||[]);
+      for(const word of words) {stats.keywords[word]++;stats.dirty=true;}
+      if(words.size)scheduleUiUpdate();
+      let kind=null;
+      if(/^\[recover\].*link-down edge:/.test(line))kind='LINK_DOWN';
+      else if(/^\[recover\].*stable link-up detected:/.test(line))kind='LINK_UP';
+      else if(/^\[main\s*\].*bringup round\s*=\s*0\b/.test(line))kind='BOOT';
+      if(kind) {
+        stats.actions[kind]=(stats.actions[kind]||0)+1;
+        addSerialEvent(kind,'','', 'log',line);
+        if(kind==='BOOT') {stats.lastQuality=null;stats.lastFine=null;stats.lastStream=null;}
+      }
+      if(/^\[recover\].*acquisition\/UDP stream suspended/.test(line))serialBooleanEvent('stream',0,'log',true);
+      if(/^\[run\s*\].*enable acquisition\/UDP stream now/.test(line))serialBooleanEvent('stream',1,'log',true);
+    }
+    function resetSerialEventStats(preserveCurrent=false) {
+      const previous=state.serialEvents;
+      state.serialEvents=null;
+      const stats=getSerialEvents();
+      if(preserveCurrent) {
+        stats.lastQuality=state.clockStatus?.time_quality??null;
+        stats.lastFine=state.clockStatus?.fine_lock??null;
+        stats.lastStream=previous?.lastStream??null;
+      }
+    }
+    function renderSerialEvents() {
+      const stats=getSerialEvents();if(!stats.dirty)return;stats.dirty=false;
+      const table=$('serialQualityCounts'), actions=$('serialActionCounts'), rows=$('serialEventRows');
+      if(!table || !actions || !rows)return;
+      table.innerHTML='';actions.innerHTML='';rows.innerHTML='';
+      function cells(parent,values,style='',detail='') {const tr=document.createElement('tr');tr.className=style;if(detail)tr.title=detail;for(const value of values){const td=document.createElement('td');td.textContent=String(value);tr.appendChild(td);}parent.appendChild(tr);}
+      for(const quality of ['LOCKED','HOLDOVER','INVALID','REACQUIRE'])cells(table,[quality,TIME_QUALITY_NAMES[quality],stats.entries[quality]],stats.entries[quality]||stats.keywords[quality]?(quality==='LOCKED'?'udp-positive':'udp-attention'):'udp-zero');
+      for(const [kind,name] of Object.entries(SERIAL_ACTION_NAMES)) {const tag=document.createElement('span');tag.className='udp-count '+((stats.actions[kind]||0)?(['FINE_LOST','STREAM_STOPPED','LINK_DOWN'].includes(kind)?'udp-attention':'udp-positive'):'udp-zero');tag.textContent=`${name}：${stats.actions[kind]||0}`;actions.appendChild(tag);}
+      for(const event of stats.events.slice(-100).reverse())cells(rows,[new Date(event.observed_at).toLocaleTimeString('zh-CN',{hour12:false}),event.kind==='TIME_QUALITY'?'时间质量':SERIAL_ACTION_NAMES[event.kind],event.detail],(event.kind==='TIME_QUALITY'?event.to!=='LOCKED':['FINE_LOST','STREAM_STOPPED','LINK_DOWN'].includes(event.kind))?'udp-attention':'udp-positive',event.detail);
+      $('serialEventSummary').textContent=`累计 ${stats.total} 个事件 · 保留 ${stats.events.length} 条${stats.dropped?` · 最早 ${stats.dropped} 条已淘汰`:''}`;
+    }
+    function exportSerialStats() {
+      const stats=getSerialEvents(), lines=['group,key,label,count'];
+      for(const [group,values] of [['entries',stats.entries],['keyword_lines',stats.keywords],['actions',stats.actions]]) {
+        for(const key of group==='actions'?Object.keys(SERIAL_ACTION_NAMES):Object.keys(values))lines.push([group,key,TIME_QUALITY_NAMES[key]||SERIAL_ACTION_NAMES[key],values[key]||0].map(csvCell).join(','));
+      }
+      downloadSerialCsv('serial_state_counts.csv',lines);
+    }
+    function downloadSerialCsv(name,lines) {
+      const blob=new Blob(['\ufeff'+lines.join('\n')+'\n'],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+    }
+    function exportSerialEvents() {
+      const stats=getSerialEvents(), columns=['observed_at','kind','from','to','source','detail'];
+      const lines=[columns.join(','),...stats.events.map(event=>columns.map(key=>csvCell(event[key])).join(','))];
+      downloadSerialCsv('serial_state_events.csv',lines);
+    }
+
+    function processLine(rawLine) {
+      const line = normalizeLogLine(rawLine);
+      if (!line) return;
+      if(/^\[precision\]/.test(line)){
+        const kv=parseKeyValues(line);
+        state.precisionConfig={...kv,observed_ms:Date.now(),input_mode:state.inputMode};
+        scheduleUiUpdate();return;
+      }
+      observeSerialWords(line);
+
+      // Continue a split [ptp-ts] record. The user's serial tool can split
+      // "filt_offset_ns" into "fil" + "t_offset_ns" on the next chunk.
+      if (state.pendingPtpTs) {
+        const looksLikeNewStructuredLine = /^\[(ptp-rx|ptp\s+|servo|front|eth|dbg|main|run|fault|hb\s*|quality|recover)/.test(line) && !/^t_offset_ns=/.test(line);
+        if (!looksLikeNewStructuredLine) {
+          state.pendingPtpTs += line;
+          if (parsePtpTsText(state.pendingPtpTs)) state.pendingPtpTs = "";
+          return;
+        }
+        // Flush incomplete line as best effort before handling the new line.
+        parsePtpTsText(state.pendingPtpTs);
+        state.pendingPtpTs = "";
+      }
+
+      if (/^\[main\s*\].*bringup round\s*=\s*0\b/.test(line)) {
+        state.precisionStartIndex=state.records.length;state.precisionConfig=null;
+        resetClockStatus();
+        scheduleUiUpdate();
+      }
+      if (/^\[(hb\s*|quality)\]/.test(line)) {
+        const kv = parseKeyValues(line);
+        const transition = line.match(/\[quality\]\s+(INVALID|REACQUIRE|LOCKED|HOLDOVER)\s*->\s*(INVALID|REACQUIRE|LOCKED|HOLDOVER)\b/);
+        if (transition) { kv.time_quality = transition[2]; kv._quality_from = transition[1]; }
+        updateClockStatus(kv, "heartbeat");
+        scheduleUiUpdate();
+        return;
+      }
+
+      if (line.includes("[ptp-ts")) {
+        state.pendingPtpTs = line;
+        if (parsePtpTsText(state.pendingPtpTs)) state.pendingPtpTs = "";
+        return;
+      }
+
+      let m;
+      m = line.match(/Sync accepted:\s*seq=(\d+),\s*t2=(0x[0-9a-fA-F_]+)/);
+      if (m) {
+        const seq = Number(m[1]);
+        state.syncBySeq.set(String(seq), { sync_seq: seq, t2: m[2] });
+        return;
+      }
+
+      m = line.match(/Follow_Up matched:\s*sync_seq=(\d+)\s+delay_req_seq=(\d+)\s+t1=(0x[0-9a-fA-F_]+)/);
+      if (m) {
+        const syncSeq = Number(m[1]);
+        const dreqSeq = Number(m[2]);
+        const ex = startNewExchange(dreqSeq);
+        ex.sync_seq = syncSeq;
+        ex.t1 = m[3];
+        const sync = state.syncBySeq.get(String(syncSeq));
+        if (sync) ex.t2 = sync.t2;
+        state.lastDelayReqSeq = dreqSeq;
+        tryCompleteExchange(dreqSeq);
+        return;
+      }
+
+      m = line.match(/Delay_Req sent:\s*seq=(\d+),\s*t3=(0x[0-9a-fA-F_]+)/);
+      if (m) {
+        const dreqSeq = Number(m[1]);
+        const ex = getOrCreateExchange(dreqSeq);
+        ex.t3 = m[2];
+        state.lastDelayReqSeq = dreqSeq;
+        tryCompleteExchange(dreqSeq);
+        return;
+      }
+
+      m = line.match(/Delay_Resp matched:\s*seq=(\d+),\s*t4=(0x[0-9a-fA-F_]+)/);
+      if (m) {
+        const dreqSeq = Number(m[1]);
+        const ex = getOrCreateExchange(dreqSeq);
+        ex.t4 = m[2];
+        state.lastCompletedSeq = dreqSeq;
+        tryCompleteExchange(dreqSeq);
+        return;
+      }
+
+      if (line.startsWith("[servo")) {
+        const kv = parseKeyValues(line);
+        const cycle = extractIntFromMap(kv, "cycle");
+        if (cycle !== null) {
+          const explicitDreqSeq = extractIntFromMap(kv, "delay_req_seq");
+          const dreqSeq = explicitDreqSeq !== null ? explicitDreqSeq : (state.lastCompletedSeq ?? cycle);
+          const ex = getOrCreateExchange(dreqSeq);
+          ex.cycle = cycle;
+          assignIfFinite(ex, "sync_seq", extractIntFromMap(kv, "sync_seq"));
+          assignIfFinite(ex, "d1_ns", extractIntFromMap(kv, "d1"));
+          assignIfFinite(ex, "d2_ns", extractIntFromMap(kv, "d2"));
+          assignIfFinite(ex, "delay_ns", extractIntFromMap(kv, "delay"));
+          assignIfFinite(ex, "filt_delay_ns", extractIntFromMap(kv, "filt_delay"));
+          assignIfFinite(ex, "delay_slope_ns", extractIntFromMap(kv, "delay_slope"));
+          assignIfFinite(ex, "offset_raw_ns", extractIntFromMap(kv, "offset_raw"));
+          assignIfFinite(ex, "offset_cal_ns", extractIntFromMap(kv, "offset_cal"));
+          assignIfFinite(ex, "offset_ns", extractIntFromMap(kv, "offset"));
+          assignIfFinite(ex, "filt_offset_ns", extractIntFromMap(kv, "filt_offset"));
+          assignIfFinite(ex, "phase_ppb", extractIntFromMap(kv, "phase_ppb"));
+          assignIfFinite(ex, "drift_ppb", extractIntFromMap(kv, "drift_ppb"));
+          assignIfFinite(ex, "raw_ppb", extractIntFromMap(kv, "raw_ppb"));
+          assignIfFinite(ex, "freq_ppb", extractIntFromMap(kv, "freq_ppb"));
+          assignServoStatus(ex, kv);
+          assignIfFinite(ex, "stream", extractIntFromMap(kv, "stream"));
+          assignIfFinite(ex, "reject", extractIntFromMap(kv, "reject"));
+          assignIfFinite(ex, "holdoff", extractIntFromMap(kv, "holdoff"));
+          if (!isFiniteNumber(ex.offset_raw_ns) && isFiniteNumber(ex.offset_ns) && !Object.prototype.hasOwnProperty.call(kv, 'offset_raw') && !Object.prototype.hasOwnProperty.call(kv, 'offset_cal')) {
+            ex.offset_raw_ns = ex.offset_ns;
+            ex.offset_cal_ns = 0;
+          }
+          computeDelayOffset(ex);
+          tryCompleteExchange(dreqSeq);
+        }
+      }
+    }
+
+    function getUiFps() {
+      const el = $("uiFps");
+      return Math.max(1, Number(el ? el.value : 5) || 5);
+    }
+
+    function getParseBudgetMs() {
+      const el = $("parseBudget");
+      return Math.max(1, Number(el ? el.value : 8) || 8);
+    }
+
+    function getRawLogLimit() {
+      const el = $("rawLogLimit");
+      return Math.max(0, Number(el ? el.value : 60000) || 0);
+    }
+
+
+    function getMaxRecords() {
+      const el = $("maxPoints");
+      const n = Number(el ? el.value : 50000);
+      return Math.max(100, Math.min(500000, Number.isFinite(n) ? n : 50000));
+    }
+
+    function getInitialViewPoints() {
+      const el = $("initialViewPoints");
+      if (!el || el.value === "all") return Infinity;
+      const n = Number(el.value);
+      return Number.isFinite(n) && n > 0 ? n : Infinity;
+    }
+
+    function getDrawPointLimit() {
+      const el = $("drawQuality");
+      const n = Number(el ? el.value : 3000);
+      return Math.max(600, Math.min(24000, Number.isFinite(n) ? n : 3000));
+    }
+
+    function trimRecordCacheIfNeeded(force = false) {
+      const max = getMaxRecords();
+      if (state.records.length <= max) return;
+      // 留一点 slack，避免每来一条记录都 splice；强制时立即按上限裁剪。
+      const slack = force ? 0 : Math.min(2000, Math.max(100, Math.floor(max * 0.03)));
+      if (!force && state.records.length <= max + slack) return;
+      const remove = state.records.length - max;
+      if (remove <= 0) return;
+      state.records.splice(0, remove);
+      state.precisionStartIndex=Math.max(0,(state.precisionStartIndex||0)-remove);
+      state.presentationRevision++;
+      state.recordsDropped += remove;
+      rebuildRecordIndex();
+      for (const st of Object.values(chartStates)) {
+        if (st.xStart !== null) st.xStart = Math.max(0, st.xStart - remove);
+        if (st.xEnd !== null) st.xEnd = Math.max(0, st.xEnd - remove);
+        if (st.selectedIndex !== null) st.selectedIndex = Math.max(0, st.selectedIndex - remove);
+      }
+    }
+
+    function feedText(text, appendRaw = true) {
+      if (!text) return;
+      state.receivedBytes += text.length;
+      if (appendRaw) appendRawLog(text);
+      const normalized = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+      const parts = (state.rawRemainder + normalized).split("\n");
+      state.rawRemainder = parts.pop() || "";
+      if (parts.length) {
+        state.lineQueue.push(...parts);
+        scheduleParser();
+      }
+      scheduleUiUpdate();
+    }
+
+    function scheduleParser() {
+      if (state.parserScheduled) return;
+      state.parserScheduled = true;
+      const cb = () => drainParserQueue();
+      if ("requestIdleCallback" in window) requestIdleCallback(cb, { timeout: 80 });
+      else setTimeout(cb, 0);
+    }
+
+    function drainParserQueue(force = false) {
+      state.parserScheduled = false;
+      const budget = force ? 1e9 : getParseBudgetMs();
+      const start = performance.now();
+      let count = 0;
+      while (state.lineCursor < state.lineQueue.length) {
+        processLine(state.lineQueue[state.lineCursor++]);
+        state.processedLines++;
+        count++;
+        if (!force && count >= 600) break;
+        if (!force && performance.now() - start >= budget) break;
+      }
+      if (state.lineCursor > 2048) {
+        state.lineQueue.splice(0, state.lineCursor);
+        state.lineCursor = 0;
+      }
+      if (state.lineCursor < state.lineQueue.length) scheduleParser();
+      else if (state.lineQueue.length === state.lineCursor) {
+        state.lineQueue.length = 0;
+        state.lineCursor = 0;
+      }
+      scheduleUiUpdate();
+    }
+
+    function flushParser() {
+      if (state.rawRemainder) {
+        state.lineQueue.push(state.rawRemainder);
+        state.rawRemainder = "";
+      }
+      drainParserQueue(true);
+      if (state.pendingPtpTs) {
+        parsePtpTsText(state.pendingPtpTs);
+        state.pendingPtpTs = "";
+      }
+      flushRawLog(true);
+      updateDashboard();
+    }
+
+    function appendRawLog(text) {
+      const maxLen = getRawLogLimit();
+      if (maxLen <= 0) return;
+      state.rawAppendBuffer += text;
+      if (state.rawAppendBuffer.length > maxLen) state.rawAppendBuffer = state.rawAppendBuffer.slice(-maxLen);
+      scheduleRawLogFlush();
+    }
+
+    function scheduleRawLogFlush() {
+      if (state.rawFlushScheduled) return;
+      state.rawFlushScheduled = true;
+      setTimeout(() => flushRawLog(false), 220);
+    }
+
+    function flushRawLog(force = false) {
+      const maxLen = getRawLogLimit();
+      state.rawFlushScheduled = false;
+      if (maxLen <= 0) {
+        state.rawText = "";
+        state.rawAppendBuffer = "";
+        const rawLog = $("rawLog");
+        if (rawLog && rawLog.textContent !== "原始日志显示已暂停；解析与绘图仍在后台继续。") rawLog.textContent = "原始日志显示已暂停；解析与绘图仍在后台继续。";
+        return;
+      }
+      if (!state.rawAppendBuffer && !force) return;
+      state.rawText += state.rawAppendBuffer;
+      state.rawAppendBuffer = "";
+      if (state.rawText.length > maxLen) state.rawText = state.rawText.slice(-maxLen);
+      const rawLog = $("rawLog");
+      if (rawLog) {
+        rawLog.textContent = state.rawText;
+        rawLog.scrollTop = rawLog.scrollHeight;
+      }
+      state.rawLastFlushMs = performance.now();
+    }
+
+    function scheduleUiUpdate(force = false) {
+      if (force) {
+        state.renderScheduled = false;
+        state.lastRenderMs = performance.now();
+        updateDashboard();
+        return;
+      }
+      if (state.renderScheduled) return;
+      const minGap = 1000 / getUiFps();
+      const wait = Math.max(0, minGap - (performance.now() - state.lastRenderMs));
+      state.renderScheduled = true;
+      setTimeout(() => {
+        state.renderScheduled = false;
+        state.lastRenderMs = performance.now();
+        updateDashboard();
+      }, wait);
+    }
+
+    function resetData() {
+      state.inputMode=state.keepReading?'live':'idle';state.presentationRevision++;
+      state.precisionConfig=null;state.precisionStartIndex=0;
+      resetSerialEventStats();
+      state.rawRemainder = "";
+      state.rawText = "";
+      state.records = [];
+      state.seen.clear();
+      state.recordKeyToIndex.clear();
+      state.syncBySeq.clear();
+      state.exchangeByDelaySeq.clear();
+      state.lastDelayReqSeq = null;
+      state.lastCompletedSeq = null;
+      state.pendingPtpTs = "";
+      state.parseErrors = 0;
+      state.lineQueue = [];
+      state.lineCursor = 0;
+      state.parserScheduled = false;
+      state.renderScheduled = false;
+      state.rawAppendBuffer = "";
+      state.rawFlushScheduled = false;
+      state.receivedBytes = 0;
+      state.processedLines = 0;
+      state.recordDirty = false;
+      state.derivedDirty = true;
+      state.recordsDropped = 0;
+      state.lastPruneAt = 0;
+      resetClockStatus();
+      for (const st of Object.values(chartStates)) {
+        st.xStart = null; st.xEnd = null; st.yMin = null; st.yMax = null; st.manualX = false; st.manualY = false;
+        st.selectedIndex = null; st.selectedSeries = null;
+        st.dragging = false; st.dragMoved = false; st.dragStart = null; st.dragView = null;
+      }
+      $("rawLog").textContent = "";
+      updateDashboard();
+      setStatus("parser", "等待 PTP 数据");
+    }
+
+    function updateDashboard() {
+      if (state.derivedDirty) recomputeDerivedSeries();
+      sanitizeAllChartStates();
+      const records = state.records;
+      const last = records[records.length - 1];
+      renderClockStatus(last);
+      renderSerialEvents();
+      $("recordCount").textContent = records.length.toLocaleString("zh-CN");
+      const recordSub = document.querySelector("#recordsCard .sub");
+      if (recordSub) recordSub.textContent = `缓存 ${records.length.toLocaleString("zh-CN")} 点${state.recordsDropped ? `，已丢弃最早 ${state.recordsDropped.toLocaleString("zh-CN")} 点` : ""}`;
+
+      if (!last) {
+        for (const id of [
+          "latestDelay", "latestOffset", "latestRawOffset", "latestCal",
+          "latestDelaySub", "latestOffsetSub", "latestRawOffsetSub", "latestCalSub", "latestQuality",
+          "t1Value", "t2Value", "t3Value", "t4Value", "t1Dec", "t2Dec", "t3Dec", "t4Dec"
+        ]) {
+          if ($(id)) $(id).textContent = "—";
+        }
+        drawCharts();
+        renderTable();
+        return;
+      }
+
+      const latestDelay = isFiniteNumber(last.delay_ns) ? last.delay_ns : null;
+      const latestRawOffset = isFiniteNumber(last.offset_raw_ns) ? last.offset_raw_ns : (isFiniteNumber(last.offset_ns) ? last.offset_ns : null);
+      const latestCal = isFiniteNumber(last.offset_cal_ns) ? last.offset_cal_ns : 0;
+      const latestCalibratedOffset = isFiniteNumber(last.offset_ns) ? last.offset_ns : (isFiniteNumber(latestRawOffset) ? latestRawOffset - latestCal : null);
+      const latestFiltOffset = isFiniteNumber(last.filt_offset_ns) ? last.filt_offset_ns : last.filt_offset_plot_ns;
+
+      $("latestDelay").textContent = formatNs(latestDelay);
+      $("latestDelaySub").textContent = `滤波值： ${formatNs(last.filt_delay_ns ?? last.filt_delay_plot_ns)}${last.filt_delay_estimated ? "（估算）" : ""}`;
+      $("latestOffset").textContent = formatNs(latestCalibratedOffset);
+      $("latestOffsetSub").textContent = `原始： ${formatNs(latestRawOffset)} · 校准： ${formatNs(latestCal)} · 滤波： ${formatNs(latestFiltOffset)}${last.filt_offset_estimated ? "（估算）" : ""}`;
+      if ($("latestRawOffset")) $("latestRawOffset").textContent = formatNs(latestRawOffset);
+      if ($("latestRawOffsetSub")) $("latestRawOffsetSub").textContent = `来自 ptp-ts 原始字段或四时间戳公式重算`;
+      if ($("latestCal")) $("latestCal").textContent = formatNs(latestCal);
+      if ($("latestCalSub")) $("latestCalSub").textContent = `补偿后： ${formatNs(latestCalibratedOffset)}`;
+      $("latestQuality").textContent = measurementQualityText(last);
+
+      $("delayCard").className = "metric";
+      $("offsetCard").className = "metric";
+      if ($("rawOffsetCard")) $("rawOffsetCard").className = "metric";
+      if ($("calCard")) $("calCard").className = "metric";
+      if (Math.abs(latestCalibratedOffset || 0) > 100000) $("offsetCard").classList.add("warn");
+      else $("offsetCard").classList.add("good");
+      if ((latestDelay || 0) > 0) $("delayCard").classList.add("good");
+      if (last.sample_valid === 0) {
+        for (const id of ["offsetCard", "delayCard"]) {
+          $(id).classList.remove("good");
+          $(id).classList.add("warn");
+        }
+      }
+
+      if (state.clockStatus.staleMeasurement) {
+        const note = "历史值／已过期：参考同步已中断，此数值不代表当前时间精度";
+        for (const id of ["offsetCard", "rawOffsetCard", "delayCard"]) {
+          if ($(id)) $(id).className = "metric stale";
+        }
+        $("latestOffsetSub").textContent = note;
+        $("latestRawOffsetSub").textContent = note;
+        $("latestDelaySub").textContent = "历史值／已过期：等待恢复同步后的新测量";
+        $("latestQuality").textContent = "历史测量，已过期；等待新的有效同步测量";
+      }
+
+      updateTimeCard("t1", last.t1);
+      updateTimeCard("t2", last.t2);
+      updateTimeCard("t3", last.t3);
+      updateTimeCard("t4", last.t4);
+
+      const backlog = Math.max(0, state.lineQueue.length - state.lineCursor);
+      const perfText = backlog > 0 ? `，待解析 ${backlog} 行` : "";
+      setStatus("parser", `已解析 ${records.length} 次交换${perfText}`);
+      drawCharts();
+      renderTable();
+    }
+
+    function updateTimeCard(prefix, hex) {
+      const big = hexToBigInt(hex);
+      $(`${prefix}Value`).textContent = formatHex64(hex);
+      $(`${prefix}Dec`).textContent = big === null ? "—" : `${big.toLocaleString("zh-CN")} ns`;
+    }
+
+    function renderTable() {
+      const tbody = $("recordTableBody");
+      const rows = state.records.slice(-14).reverse().map(r => {
+        const calibrated = isFiniteNumber(r.offset_ns) ? r.offset_ns : (isFiniteNumber(r.offset_raw_ns) ? r.offset_raw_ns - (r.offset_cal_ns || 0) : null);
+        const raw = isFiniteNumber(r.offset_raw_ns) ? r.offset_raw_ns : r.offset_ns;
+        return `
+        <tr>
+          <td>${r.cycle ?? "—"}</td>
+          <td>${r.delay_req_seq ?? "—"}</td>
+          <td>${formatNs(r.delay_ns)}</td>
+          <td>${formatNs(calibrated)}</td>
+          <td>${formatNs(raw)}</td>
+          <td>${r.lock === 1 ? "是" : (r.lock === 0 ? "否" : "—")}</td>
+          <td class="sample-quality" title="${measurementQualityText(r)}">${measurementQualityText(r, true)}</td>
+        </tr>`;
+      }).join("");
+      tbody.innerHTML = rows || `<tr><td colspan="7" style="text-align:center;color:var(--text2);padding:24px;">暂无记录</td></tr>`;
+    }
+
+    function getCss(name) {
+      return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    }
+
+    const chartStates = {
+      delayCanvas:  { xStart: null, xEnd: null, yMin: null, yMax: null, manualX: false, manualY: false, selectedIndex: null, selectedSeries: null, dragging: false, dragStart: null, dragView: null, dragMoved: false },
+      offsetCanvas: { xStart: null, xEnd: null, yMin: null, yMax: null, manualX: false, manualY: false, selectedIndex: null, selectedSeries: null, dragging: false, dragStart: null, dragView: null, dragMoved: false }
+    };
+
+    function drawCharts() {
+      if (state.derivedDirty) recomputeDerivedSeries();
+      sanitizeAllChartStates();
+      drawChart($("delayCanvas"), [
+
+        { name: "delay_ns", zh: "原始延时", field: "delay_ns", color: "#0071e3", width: 3.8, dash: [] },
+        { name: "filt_delay_plot_ns", zh: "滤波延时", field: "filt_delay_plot_ns", color: "#bf5af2", width: 4.8, dash: [10, 5], alwaysPoints: true }
+      ], "delayInfo", "延时");
+      drawChart($("offsetCanvas"), [
+        { name: "offset_raw_ns", zh: "原始偏移", field: "offset_raw_ns", color: "#8e8e93", width: 3.0, dash: [6, 4] },
+        { name: "offset_ns", zh: "校准后偏移", field: "offset_ns", color: "#ff453a", width: 4.2, dash: [] },
+        { name: "filt_offset_plot_ns", zh: "滤波偏移", field: "filt_offset_plot_ns", color: "#ff9f0a", width: 4.0, dash: [10, 5] }
+      ], "offsetInfo", "偏移");
+    }
+
+    function getRecordValue(record, seriesItem, idx) {
+      const v = record?.[seriesItem.field];
+      return isFiniteNumber(v) ? v : null;
+    }
+
+    function getVisibleRange(canvasId, total) {
+      const st = chartStates[canvasId];
+      const last = Math.max(0, total - 1);
+      if (!st || total <= 1) return [0, last];
+      if (st.xStart === null || st.xEnd === null || !Number.isFinite(st.xStart) || !Number.isFinite(st.xEnd)) {
+        const initial = getInitialViewPoints();
+        if (Number.isFinite(initial) && initial > 0 && total > initial) return [Math.max(0, last - initial + 1), last];
+        return [0, last];
+      }
+      let a = Math.max(0, Math.min(last, st.xStart));
+      let b = Math.max(0, Math.min(last, st.xEnd));
+      const minSpan = Math.min(Math.max(1, last), 3);
+      if (b - a < minSpan) {
+        const c = (a + b) / 2;
+        a = c - minSpan / 2;
+        b = c + minSpan / 2;
+      }
+      if (a < 0) { b -= a; a = 0; }
+      if (b > last) { a -= (b - last); b = last; }
+      a = Math.max(0, a); b = Math.min(last, b);
+      return [a, b];
+    }
+
+    function sanitizeChartState(canvasId, series) {
+      const st = chartStates[canvasId];
+      if (!st) return;
+      const total = state.records.length;
+      const last = Math.max(0, total - 1);
+      if (total <= 1) {
+        st.xStart = null; st.xEnd = null; st.yMin = null; st.yMax = null;
+        st.manualX = false; st.manualY = false;
+        return;
+      }
+      if (st.xStart !== null || st.xEnd !== null) {
+        let [a, b] = getVisibleRange(canvasId, total);
+        st.xStart = a; st.xEnd = b;
+      }
+      const [a, b] = getVisibleRange(canvasId, total);
+      const first = Math.max(0, Math.floor(a));
+      const lastIdx = Math.min(total - 1, Math.ceil(b));
+      const natural = naturalYRange(state.records, first, lastIdx, series);
+      const natSpan = Math.max(1, natural.max - natural.min);
+      const minSpan = Math.max(10, natSpan / 500);
+      const maxSpan = Math.max(natSpan * 80, 1000);
+      if (!st.manualY || st.yMin === null || st.yMax === null || !Number.isFinite(st.yMin) || !Number.isFinite(st.yMax)) {
+        st.yMin = natural.min; st.yMax = natural.max; st.manualY = false;
+        return;
+      }
+      let yMin = st.yMin;
+      let yMax = st.yMax;
+      if (yMax < yMin) [yMin, yMax] = [yMax, yMin];
+      let span = yMax - yMin;
+      const center = (yMin + yMax) / 2;
+      if (!Number.isFinite(span) || span <= 0) span = natSpan;
+      if (span < minSpan) span = minSpan;
+      if (span > maxSpan) span = maxSpan;
+      // 若手动缩放后视野完全远离当前数据，回到自然范围，避免出现空白或坐标异常。
+      if (center < natural.min - maxSpan || center > natural.max + maxSpan) {
+        st.yMin = natural.min; st.yMax = natural.max; st.manualY = false;
+      } else {
+        st.yMin = center - span / 2;
+        st.yMax = center + span / 2;
+      }
+    }
+
+    function sanitizeAllChartStates() {
+      if (state.derivedDirty) recomputeDerivedSeries();
+      sanitizeChartState("delayCanvas", [
+        { field: "delay_ns" },
+        { field: "filt_delay_plot_ns" }
+      ]);
+      sanitizeChartState("offsetCanvas", [
+        { field: "offset_raw_ns" },
+        { field: "offset_ns" },
+        { field: "filt_offset_plot_ns" }
+      ]);
+    }
+
+    function chooseTimeUnit(valuesNs) {
+      const maxAbs = Math.max(1, ...valuesNs.map(v => Math.abs(v)));
+      if (maxAbs >= 1e6) return { label: "ms", scale: 1e6, digits: 3 };
+      if (maxAbs >= 1e3) return { label: "µs", scale: 1e3, digits: 3 };
+      return { label: "ns", scale: 1, digits: 0 };
+    }
+
+    function formatInUnit(ns, unit) {
+      if (ns === null || ns === undefined || Number.isNaN(ns)) return "—";
+      const v = ns / unit.scale;
+      return unit.scale === 1 ? `${Math.round(v)} ${unit.label}` : `${v.toFixed(unit.digits)} ${unit.label}`;
+    }
+
+    function resetChartZoom(canvasId) {
+      const st = chartStates[canvasId];
+      st.xStart = null; st.xEnd = null; st.yMin = null; st.yMax = null; st.manualX = false; st.manualY = false;
+      st.selectedIndex = null; st.selectedSeries = null;
+      drawCharts();
+    }
+
+    function naturalYRange(records, first, last, series) {
+      const values = [];
+      let min = Infinity, max = -Infinity;
+      for (let i = first; i <= last; i++) {
+        const r = records[i];
+        for (const s of series) {
+          const v = getRecordValue(r, s, i);
+          if (typeof v === "number" && Number.isFinite(v)) {
+            if (v < min) min = v;
+            if (v > max) max = v;
+            // 只保留少量值用于单位选择，避免超大数组占用内存。
+            if (values.length < 20000) values.push(v);
+          }
+        }
+      }
+      if (!Number.isFinite(min) || !Number.isFinite(max)) return { min: -1, max: 1, values: [] };
+      if (min === max) { min -= 1; max += 1; }
+      const span = max - min;
+      values.push(min, max);
+      return { min: min - span * 0.12, max: max + span * 0.12, values };
+    }
+
+    function drawSeriesSmart(ctx, records, first, last, s, xFor, yFor, plotW) {
+      const total = Math.max(0, last - first + 1);
+      const limit = Math.max(600, Math.min(getDrawPointLimit(), Math.floor(plotW * 2.2)));
+      const useRaw = total <= limit;
+      ctx.strokeStyle = s.color;
+      ctx.lineWidth = s.width || 3.5;
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+      ctx.setLineDash(s.dash || []);
+
+      if (useRaw) {
+        ctx.beginPath();
+        let started = false;
+        for (let i = first; i <= last; i++) {
+          const v = getRecordValue(records[i], s, i);
+          if (!isFiniteNumber(v)) continue;
+          const x = xFor(i), y = yFor(v);
+          if (!started) { ctx.moveTo(x, y); started = true; }
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+        return { decimated: false, pointsDrawn: total };
+      }
+
+      // 大数据量绘图：按桶抽样画平均趋势，同时画 min/max envelope，既不卡顿也不丢峰值。
+      const buckets = Math.max(64, Math.min(limit, Math.floor(plotW)));
+      const step = total / buckets;
+      const points = [];
+      const ranges = [];
+      for (let b = 0; b < buckets; b++) {
+        const bs = Math.floor(first + b * step);
+        const be = Math.min(last, Math.max(bs, Math.floor(first + (b + 1) * step) - 1));
+        let cnt = 0, sumI = 0, sumV = 0;
+        let minV = Infinity, maxV = -Infinity, minI = bs, maxI = bs;
+        for (let i = bs; i <= be; i++) {
+          const v = getRecordValue(records[i], s, i);
+          if (!isFiniteNumber(v)) continue;
+          cnt++; sumI += i; sumV += v;
+          if (v < minV) { minV = v; minI = i; }
+          if (v > maxV) { maxV = v; maxI = i; }
+        }
+        if (cnt > 0) {
+          const avgI = sumI / cnt;
+          const avgV = sumV / cnt;
+          points.push([avgI, avgV]);
+          ranges.push([(minI + maxI) / 2, minV, maxV]);
+        }
+      }
+
+      // min/max envelope：低透明度竖线，保留局部峰值。
+      ctx.save();
+      ctx.globalAlpha = 0.28;
+      ctx.setLineDash([]);
+      ctx.lineWidth = Math.max(1, (s.width || 3.5) * 0.45);
+      ctx.strokeStyle = s.color;
+      for (const [idx, lo, hi] of ranges) {
+        const x = xFor(idx);
+        ctx.beginPath();
+        ctx.moveTo(x, yFor(lo));
+        ctx.lineTo(x, yFor(hi));
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      ctx.beginPath();
+      let started = false;
+      ctx.setLineDash(s.dash || []);
+      ctx.lineWidth = s.width || 3.5;
+      for (const [idx, v] of points) {
+        const x = xFor(idx), y = yFor(v);
+        if (!started) { ctx.moveTo(x, y); started = true; }
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+      return { decimated: true, pointsDrawn: points.length };
+    }
+
+    function drawChart(canvas, series, infoId, chartName) {
+      const ctx = canvas.getContext("2d");
+      const width = canvas.width, height = canvas.height;
+      ctx.clearRect(0, 0, width, height);
+
+      const text0 = getCss("--text0") || "#1d1d1f";
+      const text2 = getCss("--text2") || "#86868b";
+      const grid = getCss("--line") || "rgba(0,0,0,.1)";
+      const records = state.records;
+      const st = chartStates[canvas.id];
+      const info = $(infoId);
+      const pad = { l: 92, r: 34, t: 34, b: 70 };
+      const plotW = width - pad.l - pad.r;
+      const plotH = height - pad.t - pad.b;
+
+      ctx.font = "22px -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif";
+      ctx.fillStyle = text2;
+      if (records.length < 2) {
+        ctx.fillText("等待串口中的 PTP 时间戳数据…", pad.l, height / 2);
+        if (info) info.textContent = "提示：X轴为数据序号，Y轴为时间；滚轮缩放，点击图表读取坐标。";
+        return;
+      }
+
+      let [viewStart, viewEnd] = getVisibleRange(canvas.id, records.length);
+      const first = Math.max(0, Math.floor(viewStart));
+      const last = Math.min(records.length - 1, Math.ceil(viewEnd));
+      const yr = naturalYRange(records, first, last, series);
+      if (!st.manualY || st.yMin === null || st.yMax === null || !Number.isFinite(st.yMin) || !Number.isFinite(st.yMax)) {
+        st.yMin = yr.min; st.yMax = yr.max;
+      }
+      let minY = st.yMin, maxY = st.yMax;
+      if (minY === maxY) { minY -= 1; maxY += 1; }
+      const unit = chooseTimeUnit([minY, maxY, ...yr.values]);
+
+      const xFor = (i) => pad.l + (i - viewStart) * plotW / Math.max(1, (viewEnd - viewStart));
+      const yFor = (vNs) => pad.t + (maxY - vNs) * plotH / (maxY - minY);
+      const idxForX = (x) => viewStart + (x - pad.l) * (viewEnd - viewStart) / Math.max(1, plotW);
+      const nsForY = (y) => maxY - (y - pad.t) * (maxY - minY) / Math.max(1, plotH);
+      canvas._chartMap = { pad, plotW, plotH, viewStart, viewEnd, minY, maxY, series, infoId, unit, idxForX, nsForY, xFor, yFor };
+
+      // Grid and Y labels in auto unit.
+      ctx.textAlign = "right";
+      ctx.textBaseline = "middle";
+      ctx.font = "18px -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif";
+      for (let i = 0; i <= 5; i++) {
+        const y = pad.t + plotH * i / 5;
+        const vNs = maxY - (maxY - minY) * i / 5;
+        ctx.beginPath();
+        ctx.moveTo(pad.l, y);
+        ctx.lineTo(width - pad.r, y);
+        ctx.strokeStyle = grid;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.fillStyle = text2;
+        const scaled = vNs / unit.scale;
+        ctx.fillText(unit.scale === 1 ? String(Math.round(scaled)) : scaled.toFixed(unit.digits), pad.l - 12, y);
+      }
+
+      // X axis: data sequence number, 1-based.
+      ctx.textAlign = "center";
+      ctx.textBaseline = "top";
+      const xTickCount = Math.min(7, Math.max(1, last - first));
+      for (let i = 0; i <= xTickCount; i++) {
+        const idx = Math.round(first + i * (last - first) / xTickCount);
+        const x = xFor(idx);
+        ctx.fillStyle = text2;
+        ctx.fillText(String(idx + 1), x, height - pad.b + 18);
+      }
+
+      // Axis labels.
+      ctx.fillStyle = text2;
+      ctx.textAlign = "right";
+      ctx.fillText(`时间 / ${unit.label}`, width - pad.r, height - 24);
+      ctx.textAlign = "center";
+      ctx.fillText("数据序号", pad.l + plotW / 2, height - 24);
+
+      // Zero line for offset or mixed ranges.
+      if (minY < 0 && maxY > 0) {
+        const zy = yFor(0);
+        ctx.beginPath(); ctx.setLineDash([8, 8]);
+        ctx.moveTo(pad.l, zy); ctx.lineTo(width - pad.r, zy);
+        ctx.strokeStyle = "rgba(128,128,128,0.40)"; ctx.stroke(); ctx.setLineDash([]);
+      }
+
+      // Series lines. 大窗口自动抽样绘制，避免历史缓存很大时卡顿。
+      let anyDecimated = false;
+      let totalDrawn = 0;
+      for (const s of series) {
+        const result = drawSeriesSmart(ctx, records, first, last, s, xFor, yFor, plotW);
+        anyDecimated = anyDecimated || result.decimated;
+        totalDrawn += result.pointsDrawn || 0;
+      }
+
+      // Point markers：只在足够稀疏时显示，避免大缓存下画几十万个圆点。
+      const visibleCount = last - first + 1;
+      for (const s of series) {
+        if (!(visibleCount <= 260 || (s.alwaysPoints && visibleCount <= 900))) continue;
+        ctx.fillStyle = s.color;
+        for (let i = first; i <= last; i++) {
+          const v = getRecordValue(records[i], s, i);
+          if (!isFiniteNumber(v)) continue;
+          ctx.beginPath(); ctx.arc(xFor(i), yFor(v), s.alwaysPoints ? 4.0 : 3.2, 0, Math.PI * 2); ctx.fill();
+        }
+      }
+
+      // Selected marker and crosshair.
+      if (st.selectedIndex !== null) {
+        const idx = Math.max(0, Math.min(records.length - 1, st.selectedIndex));
+        if (idx >= first && idx <= last) {
+          const x = xFor(idx);
+          ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, height - pad.b);
+          ctx.strokeStyle = "rgba(0,113,227,0.42)"; ctx.lineWidth = 2; ctx.stroke();
+          for (const s of series) {
+            const v = getRecordValue(records[idx], s, idx);
+            if (typeof v !== "number" || !Number.isFinite(v)) continue;
+            const y = yFor(v);
+            ctx.beginPath(); ctx.arc(x, y, (st.selectedSeries === s.field ? 8 : 5.5), 0, Math.PI * 2);
+            ctx.fillStyle = s.color; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = "white"; ctx.stroke();
+          }
+        }
+      }
+
+      // Legend.
+      ctx.textAlign = "left"; ctx.textBaseline = "middle";
+      ctx.font = "18px -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif";
+      let lx = pad.l;
+      for (const s of series) {
+        ctx.fillStyle = s.color;
+        ctx.beginPath(); ctx.arc(lx, 19, 6, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = text0;
+        ctx.fillText(s.zh || s.name, lx + 12, 19);
+        lx += ctx.measureText(s.zh || s.name).width + 54;
+      }
+
+      if (info && st.selectedIndex === null) {
+        const mode = anyDecimated ? `，已抽样绘制约 ${totalDrawn.toLocaleString("zh-CN")} 个绘图点并保留峰值范围` : "";
+        info.textContent = `显示第 ${first + 1}–${last + 1} 个点，共 ${records.length.toLocaleString("zh-CN")} 个缓存点${mode}；Y轴单位：${unit.label}。滚轮同时缩放X/Y，按 Shift 只缩放X，按 Ctrl 只缩放Y。`;
+      }
+    }
+
+
+    /* v1.4: 更规范的坐标轴绘图。
+       - X 轴固定为数据序号（1-based）。
+       - Y 轴为时间，自动使用 ns / µs / ms。
+       - tick 使用 1/2/5/10 nice step，避免不规则坐标。
+       - 保留原有大缓存抽样绘制、点击取坐标、滚轮缩放和平移逻辑。 */
+    function niceNumber(range, round) {
+      if (!Number.isFinite(range) || range <= 0) return 1;
+      const exponent = Math.floor(Math.log10(range));
+      const fraction = range / Math.pow(10, exponent);
+      let niceFraction;
+      if (round) {
+        if (fraction < 1.5) niceFraction = 1;
+        else if (fraction < 3) niceFraction = 2;
+        else if (fraction < 7) niceFraction = 5;
+        else niceFraction = 10;
+      } else {
+        if (fraction <= 1) niceFraction = 1;
+        else if (fraction <= 2) niceFraction = 2;
+        else if (fraction <= 5) niceFraction = 5;
+        else niceFraction = 10;
+      }
+      return niceFraction * Math.pow(10, exponent);
+    }
+
+    function niceLinearTicks(min, max, target = 7, integerOnly = false) {
+      if (!Number.isFinite(min) || !Number.isFinite(max)) return { min: 0, max: 1, ticks: [0, 1], step: 1 };
+      if (min === max) { min -= 0.5; max += 0.5; }
+      if (min > max) [min, max] = [max, min];
+      const span = max - min;
+      let step = niceNumber(span / Math.max(1, target - 1), true);
+      if (integerOnly) step = Math.max(1, Math.round(step));
+      let niceMin = Math.floor(min / step) * step;
+      let niceMax = Math.ceil(max / step) * step;
+      if (integerOnly) { niceMin = Math.ceil(niceMin); niceMax = Math.floor(niceMax); }
+      const ticks = [];
+      const maxTicks = 80;
+      for (let v = niceMin, i = 0; v <= niceMax + step * 0.5 && i < maxTicks; v += step, i++) {
+        const vv = integerOnly ? Math.round(v) : Number(v.toFixed(12));
+        if (!integerOnly || Number.isInteger(vv)) ticks.push(vv);
+      }
+      if (!ticks.length) ticks.push(min, max);
+      return { min: niceMin, max: niceMax, ticks, step };
+    }
+
+    function decimalsForStep(step) {
+      if (!Number.isFinite(step) || step <= 0) return 0;
+      if (step >= 1) return 0;
+      return Math.min(6, Math.ceil(-Math.log10(step)) + 1);
+    }
+
+    function formatAxisTick(value, step) {
+      if (!Number.isFinite(value)) return '—';
+      const digits = decimalsForStep(step);
+      return digits === 0 ? String(Math.round(value)) : value.toFixed(digits);
+    }
+
+    function drawChart(canvas, series, infoId, chartName) {
+      const ctx = canvas.getContext("2d");
+      const width = canvas.width, height = canvas.height;
+      ctx.clearRect(0, 0, width, height);
+
+      const text0 = getCss("--text0") || "#1d1d1f";
+      const text2 = getCss("--text2") || "#86868b";
+      const grid = getCss("--line") || "rgba(0,0,0,.1)";
+      const records = state.records;
+      const st = chartStates[canvas.id];
+      const info = $(infoId);
+      const pad = { l: 116, r: 42, t: 48, b: 94 };
+      const plotW = width - pad.l - pad.r;
+      const plotH = height - pad.t - pad.b;
+
+      ctx.font = "24px -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif";
+      ctx.fillStyle = text2;
+      if (records.length < 2) {
+        ctx.fillText("等待串口中的 PTP 时间戳数据…", pad.l, height / 2);
+        if (info) info.textContent = "提示：X轴为数据序号，Y轴为时间；滚轮缩放，点击图表读取坐标。";
+        return;
+      }
+
+      let [viewStart, viewEnd] = getVisibleRange(canvas.id, records.length);
+      const first = Math.max(0, Math.floor(viewStart));
+      const last = Math.min(records.length - 1, Math.ceil(viewEnd));
+      const yr = naturalYRange(records, first, last, series);
+      if (!st.manualY || st.yMin === null || st.yMax === null || !Number.isFinite(st.yMin) || !Number.isFinite(st.yMax)) {
+        st.yMin = yr.min; st.yMax = yr.max;
+      }
+      let minY = st.yMin, maxY = st.yMax;
+      if (minY === maxY) { minY -= 1; maxY += 1; }
+      if (minY > maxY) [minY, maxY] = [maxY, minY];
+
+      const unit = chooseTimeUnit([minY, maxY, ...yr.values]);
+      const scaledMin = minY / unit.scale;
+      const scaledMax = maxY / unit.scale;
+      const yNice = niceLinearTicks(scaledMin, scaledMax, 7, false);
+      // 自动Y轴采用nice范围；手动Y轴保持用户缩放范围，但tick仍使用nice step。
+      if (!st.manualY) {
+        minY = yNice.min * unit.scale;
+        maxY = yNice.max * unit.scale;
+        st.yMin = minY; st.yMax = maxY;
+      }
+      const yTicks = niceLinearTicks(minY / unit.scale, maxY / unit.scale, 7, false);
+
+      const xFor = (i) => pad.l + (i - viewStart) * plotW / Math.max(1, (viewEnd - viewStart));
+      const yFor = (vNs) => pad.t + (maxY - vNs) * plotH / Math.max(1, (maxY - minY));
+      const idxForX = (x) => viewStart + (x - pad.l) * (viewEnd - viewStart) / Math.max(1, plotW);
+      const nsForY = (y) => maxY - (y - pad.t) * (maxY - minY) / Math.max(1, plotH);
+      canvas._chartMap = { pad, plotW, plotH, viewStart, viewEnd, minY, maxY, series, infoId, unit, idxForX, nsForY, xFor, yFor };
+
+      // 背景绘图区。
+      ctx.save();
+      ctx.fillStyle = document.body.getAttribute('data-theme') === 'dark' ? 'rgba(255,255,255,0.025)' : 'rgba(255,255,255,0.30)';
+      ctx.fillRect(pad.l, pad.t, plotW, plotH);
+      ctx.restore();
+
+      // Y 轴网格、主刻度与标签。
+      ctx.textAlign = "right";
+      ctx.textBaseline = "middle";
+      ctx.font = "20px -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif";
+      for (const tv of yTicks.ticks) {
+        const vNs = tv * unit.scale;
+        const y = yFor(vNs);
+        if (y < pad.t - 1 || y > height - pad.b + 1) continue;
+        ctx.beginPath();
+        ctx.moveTo(pad.l, y);
+        ctx.lineTo(width - pad.r, y);
+        ctx.strokeStyle = grid;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(pad.l - 6, y);
+        ctx.lineTo(pad.l, y);
+        ctx.strokeStyle = text2;
+        ctx.stroke();
+        ctx.fillStyle = text2;
+        ctx.fillText(formatAxisTick(tv, yTicks.step), pad.l - 12, y);
+      }
+
+      // X 轴使用数据序号，1-based，nice integer step。
+      const xNice = niceLinearTicks(first + 1, last + 1, 10, true);
+      ctx.textAlign = "center";
+      ctx.textBaseline = "top";
+      for (const tv of xNice.ticks) {
+        const idx = tv - 1;
+        if (idx < viewStart - 0.5 || idx > viewEnd + 0.5) continue;
+        const x = xFor(idx);
+        ctx.beginPath();
+        ctx.moveTo(x, pad.t);
+        ctx.lineTo(x, height - pad.b);
+        ctx.strokeStyle = grid;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x, height - pad.b);
+        ctx.lineTo(x, height - pad.b + 7);
+        ctx.strokeStyle = text2;
+        ctx.stroke();
+        ctx.fillStyle = text2;
+        ctx.fillText(String(tv), x, height - pad.b + 16);
+      }
+
+      // 坐标轴边框。
+      ctx.beginPath();
+      ctx.rect(pad.l, pad.t, plotW, plotH);
+      ctx.strokeStyle = grid;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      // 轴标题。
+      ctx.fillStyle = text2;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "top";
+      ctx.fillText("数据序号", pad.l + plotW / 2, height - 30);
+      ctx.save();
+      ctx.translate(28, pad.t + plotH / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(`时间 / ${unit.label}`, 0, 0);
+      ctx.restore();
+
+      // 零线。
+      if (minY < 0 && maxY > 0) {
+        const zy = yFor(0);
+        ctx.beginPath(); ctx.setLineDash([8, 8]);
+        ctx.moveTo(pad.l, zy); ctx.lineTo(width - pad.r, zy);
+        ctx.strokeStyle = "rgba(128,128,128,0.48)"; ctx.lineWidth = 1.4; ctx.stroke(); ctx.setLineDash([]);
+      }
+
+      // 曲线绘图区 clip。
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(pad.l, pad.t, plotW, plotH);
+      ctx.clip();
+      let anyDecimated = false;
+      let totalDrawn = 0;
+      for (const s of series) {
+        const result = drawSeriesSmart(ctx, records, first, last, s, xFor, yFor, plotW);
+        anyDecimated = anyDecimated || result.decimated;
+        totalDrawn += result.pointsDrawn || 0;
+      }
+      const visibleCount = last - first + 1;
+      for (const s of series) {
+        if (!(visibleCount <= 260 || (s.alwaysPoints && visibleCount <= 900))) continue;
+        ctx.fillStyle = s.color;
+        for (let i = first; i <= last; i++) {
+          const v = getRecordValue(records[i], s, i);
+          if (!isFiniteNumber(v)) continue;
+          ctx.beginPath(); ctx.arc(xFor(i), yFor(v), s.alwaysPoints ? 4.0 : 3.2, 0, Math.PI * 2); ctx.fill();
+        }
+      }
+      if (st.selectedIndex !== null) {
+        const idx = Math.max(0, Math.min(records.length - 1, st.selectedIndex));
+        if (idx >= first && idx <= last) {
+          const x = xFor(idx);
+          ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, height - pad.b);
+          ctx.strokeStyle = "rgba(0,113,227,0.42)"; ctx.lineWidth = 2; ctx.stroke();
+          for (const s of series) {
+            const v = getRecordValue(records[idx], s, idx);
+            if (typeof v !== "number" || !Number.isFinite(v)) continue;
+            const y = yFor(v);
+            ctx.beginPath(); ctx.arc(x, y, (st.selectedSeries === s.field ? 8 : 5.5), 0, Math.PI * 2);
+            ctx.fillStyle = s.color; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = "white"; ctx.stroke();
+          }
+        }
+      }
+      ctx.restore();
+
+      // 图例。
+      ctx.textAlign = "left"; ctx.textBaseline = "middle";
+      ctx.font = "20px -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif";
+      let lx = pad.l;
+      for (const s of series) {
+        ctx.fillStyle = s.color;
+        ctx.beginPath(); ctx.arc(lx, 23, 7, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = text0;
+        ctx.fillText(s.zh || s.name, lx + 12, 23);
+        lx += ctx.measureText(s.zh || s.name).width + 62;
+      }
+
+      if (info && st.selectedIndex === null) {
+        const mode = anyDecimated ? `，已抽样绘制约 ${totalDrawn.toLocaleString("zh-CN")} 个绘图点并保留峰值范围` : "";
+        info.textContent = `显示第 ${first + 1}–${last + 1} 个点，共 ${records.length.toLocaleString("zh-CN")} 个缓存点${mode}；X轴=数据序号，Y轴单位=${unit.label}。滚轮同时缩放X/Y，按 Shift 只缩放X，按 Ctrl 只缩放Y。`;
+      }
+    }
+
+    function canvasPoint(evt, canvas) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: (evt.clientX - rect.left) * canvas.width / rect.width,
+        y: (evt.clientY - rect.top) * canvas.height / rect.height
+      };
+    }
+
+    function showChartCoordinate(canvas, pt) {
+      const map = canvas._chartMap;
+      if (!map) return;
+      const idxFloat = map.idxForX(pt.x);
+      const yNs = map.nsForY(pt.y);
+      const idx = Math.max(0, Math.min(state.records.length - 1, Math.round(idxFloat)));
+      const r = state.records[idx];
+      if (!r) return;
+      const st = chartStates[canvas.id];
+      let best = null;
+      for (const s of map.series) {
+        const v = getRecordValue(r, s, idx);
+        if (typeof v !== "number" || !Number.isFinite(v)) continue;
+        const d = Math.abs(v - yNs);
+        if (!best || d < best.d) best = { s, v, d };
+      }
+      st.selectedIndex = idx;
+      st.selectedSeries = best?.s?.field || null;
+      const info = $(map.infoId);
+      const values = map.series.map(s => {
+        const v = getRecordValue(r, s, idx);
+        return `${s.zh || s.name}=${formatInUnit(v, map.unit)} (${formatNs(v)})`;
+      }).join("，");
+      if (info) info.textContent = `坐标：数据序号=${idx + 1}，cycle=${r.cycle ?? "—"}，dreq=${r.delay_req_seq ?? "—"}，鼠标Y≈${formatInUnit(yNs, map.unit)}；${values}`;
+      drawCharts();
+    }
+
+    function zoomChart(canvas, evt) {
+      evt.preventDefault();
+      if (state.records.length < 3 || !canvas._chartMap) return;
+      const st = chartStates[canvas.id];
+      const map = canvas._chartMap;
+      const pt = canvasPoint(evt, canvas);
+      const inPlot = pt.x >= map.pad.l && pt.x <= canvas.width - map.pad.r && pt.y >= map.pad.t && pt.y <= canvas.height - map.pad.b;
+      if (!inPlot) return;
+
+      const zoomBoth = !evt.shiftKey && !evt.ctrlKey;
+      const zoomX = zoomBoth || evt.shiftKey;
+      const zoomY = zoomBoth || evt.ctrlKey;
+      const factor = evt.deltaY > 0 ? 1.22 : 0.82;
+
+      if (zoomX) {
+        let [a, b] = getVisibleRange(canvas.id, state.records.length);
+        const span = Math.max(1, b - a);
+        const ratio = Math.max(0, Math.min(1, (pt.x - map.pad.l) / Math.max(1, map.plotW)));
+        const center = a + ratio * span;
+        let newSpan = span * factor;
+        const minSpan = Math.min(4, state.records.length - 1);
+        const maxSpan = Math.max(1, state.records.length - 1);
+        newSpan = Math.max(minSpan, Math.min(maxSpan, newSpan));
+        let ns = center - ratio * newSpan;
+        let ne = ns + newSpan;
+        if (ns < 0) { ne -= ns; ns = 0; }
+        if (ne > state.records.length - 1) { ns -= (ne - (state.records.length - 1)); ne = state.records.length - 1; }
+        st.xStart = Math.max(0, ns); st.xEnd = Math.min(state.records.length - 1, ne); st.manualX = true;
+      }
+
+      if (zoomY) {
+        const centerY = map.nsForY(pt.y);
+        const ySpan = Math.max(1, st.yMax - st.yMin);
+        const [a, b] = getVisibleRange(canvas.id, state.records.length);
+        const natural = naturalYRange(state.records, Math.floor(a), Math.ceil(b), map.series);
+        const natSpan = Math.max(1, natural.max - natural.min);
+        const minSpan = Math.max(10, natSpan / 500);
+        const maxSpan = Math.max(1000, natSpan * 80);
+        let newSpan = Math.max(minSpan, Math.min(maxSpan, ySpan * factor));
+        const ratioY = Math.max(0, Math.min(1, (pt.y - map.pad.t) / Math.max(1, map.plotH)));
+        st.yMin = centerY - (1 - ratioY) * newSpan;
+        st.yMax = st.yMin + newSpan;
+        st.manualY = true;
+      }
+      sanitizeChartState(canvas.id, map.series);
+      drawCharts();
+    }
+
+    function bindChartInteractions() {
+      for (const id of ["delayCanvas", "offsetCanvas"]) {
+        const canvas = $(id);
+        const st = chartStates[id];
+        canvas.addEventListener("click", (evt) => {
+          if (st.dragMoved) { st.dragMoved = false; return; }
+          showChartCoordinate(canvas, canvasPoint(evt, canvas));
+        });
+        canvas.addEventListener("wheel", (evt) => zoomChart(canvas, evt), { passive: false });
+        canvas.addEventListener("pointerdown", (evt) => {
+          if (!canvas._chartMap) return;
+          st.dragging = true; st.dragMoved = false;
+          const pt = canvasPoint(evt, canvas);
+          st.dragStart = pt;
+          st.dragView = { xStart: st.xStart, xEnd: st.xEnd, yMin: st.yMin, yMax: st.yMax };
+          const [a, b] = getVisibleRange(id, state.records.length);
+          if (st.dragView.xStart === null || st.dragView.xEnd === null) { st.dragView.xStart = a; st.dragView.xEnd = b; }
+          canvas.setPointerCapture?.(evt.pointerId);
+        });
+        canvas.addEventListener("pointermove", (evt) => {
+          if (!st.dragging || !canvas._chartMap || !st.dragStart || !st.dragView) return;
+          const pt = canvasPoint(evt, canvas);
+          const dx = pt.x - st.dragStart.x;
+          const dy = pt.y - st.dragStart.y;
+          if (Math.abs(dx) > 3 || Math.abs(dy) > 3) st.dragMoved = true;
+          const map = canvas._chartMap;
+          const xSpan = st.dragView.xEnd - st.dragView.xStart;
+          let ns = st.dragView.xStart - dx / Math.max(1, map.plotW) * xSpan;
+          let ne = st.dragView.xEnd - dx / Math.max(1, map.plotW) * xSpan;
+          if (ns < 0) { ne -= ns; ns = 0; }
+          if (ne > state.records.length - 1) { ns -= (ne - (state.records.length - 1)); ne = state.records.length - 1; }
+          st.xStart = Math.max(0, ns); st.xEnd = Math.min(state.records.length - 1, ne); st.manualX = true;
+          const ySpan = st.dragView.yMax - st.dragView.yMin;
+          const yShift = dy / Math.max(1, map.plotH) * ySpan;
+          st.yMin = st.dragView.yMin + yShift;
+          st.yMax = st.dragView.yMax + yShift;
+          st.manualY = true;
+          sanitizeChartState(id, canvas._chartMap.series);
+          drawCharts();
+        });
+        canvas.addEventListener("pointerup", (evt) => {
+          st.dragging = false; st.dragStart = null; st.dragView = null;
+          try { canvas.releasePointerCapture?.(evt.pointerId); } catch (_) {}
+        });
+        canvas.addEventListener("pointerleave", () => { st.dragging = false; st.dragStart = null; st.dragView = null; });
+      }
+      $("delayResetZoom").addEventListener("click", () => resetChartZoom("delayCanvas"));
+      $("offsetResetZoom").addEventListener("click", () => resetChartZoom("offsetCanvas"));
+    }
+
+    function shortNumber(v) {
+      const abs = Math.abs(v);
+      if (abs >= 1e6) return (v / 1e6).toFixed(2) + "M";
+      if (abs >= 1e3) return (v / 1e3).toFixed(1) + "k";
+      return String(Math.round(v));
+    }
+
+    async function connectSerial() {
+      if (!("serial" in navigator)) {
+        setStatus("serial", "浏览器不支持 Web Serial");
+        alert("当前浏览器不支持 Web Serial API。请使用 Chrome/Edge，并通过 HTTPS 或 localhost 打开；也可以手动粘贴日志解析。");
+        return;
+      }
+      try {
+        state.port = await navigator.serial.requestPort();
+        const baudRate = Number($("baudRate").value || 115200);
+        await state.port.open({ baudRate, dataBits: 8, stopBits: 1, parity: "none", flowControl: "none" });
+        setStatus("serial", `已连接 @ ${baudRate}`);
+        $("connectButton").disabled = true;
+        $("disconnectButton").disabled = false;
+        $("sendButton").disabled = false;
+        $("sendCtrlCButton").disabled = false;
+        flushParser(); state.keepReading = true; state.inputMode='live';resetClockStatus();
+        readLoop();
+      } catch (err) {
+        console.error(err);
+        setStatus("serial", "连接失败");
+      }
+    }
+
+    async function readLoop() {
+      try {
+        const decoder = new TextDecoderStream();
+        state.inputDone = state.port.readable.pipeTo(decoder.writable).catch(() => {});
+        state.reader = decoder.readable.getReader();
+        while (state.keepReading) {
+          const { value, done } = await state.reader.read();
+          if (done) break;
+          if (value && state.keepReading) { state.inputMode='live'; feedText(value, true); }
+        }
+      } catch (err) {
+        console.error(err);
+        setStatus("serial", "读取错误");
+      } finally {
+        try { state.reader?.releaseLock(); } catch (_) {}
+        flushParser(); state.keepReading=false;
+      }
+    }
+
+    async function disconnectSerial() {
+      try {
+        state.keepReading = false;
+        flushParser();
+        if (state.reader) await state.reader.cancel().catch(() => {});
+        await state.inputDone?.catch(() => {});
+        if (state.port) await state.port.close();
+      } catch (err) {
+        console.warn(err);
+      } finally {
+        state.port = null;
+        state.reader = null;
+        state.inputDone = null;
+        setStatus("serial", "串口空闲");
+        $("connectButton").disabled = false;
+        $("disconnectButton").disabled = true;
+        $("sendButton").disabled = true;
+        $("sendCtrlCButton").disabled = true;
+      }
+    }
+
+    async function sendSerialText(text) {
+      if (!state.port || !state.port.writable) return;
+      const endings = { none: "", n: "\n", r: "\r", rn: "\r\n" };
+      const suffix = endings[$("lineEnding").value] ?? "\n";
+      const writer = state.port.writable.getWriter();
+      try {
+        await writer.write(new TextEncoder().encode(text + suffix));
+      } finally {
+        writer.releaseLock();
+      }
+    }
+
+    function exportCsv() {
+      flushParser();
+      const header = ["created_at", "source", "input_mode", "cycle", "sync_seq", "delay_req_seq", "t1", "t2", "t3", "t4", "d1_ns", "d2_ns", "delay_ns", "filt_delay_ns", "filt_delay_plot_ns", "delay_slope_ns", "offset_raw_ns", "offset_cal_ns", "offset_ns", "filt_offset_ns", "filt_offset_plot_ns", "drift_ppb", "phase_ppb", "raw_ppb", "freq_ppb", "lock", "streak", "stream", "reject", "holdoff", "ready", "ready_streak", "fine_lock", "fine_streak", "lock_basis", "mode", "bias_ppb", "bias_step_ppb", "direct_ppb", "target_ppb", "freeze", "delay_ok", "drift_ok", "sample_valid", "quality", "time_quality", "time_quality_source", "delay_ref_ns", "delay_margin_ns", "spike_count", "rebase_count", "filt_delay_estimated", "filt_offset_estimated", "filt_delay_held", "filt_offset_held"];
+      const lines = [header.join(",")];
+      for (const r of state.records) {
+        lines.push(header.map(k => csvCell(r[k])).join(","));
+      }
+      const blob = new Blob([lines.join("\n") + "\n"], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `dut_ptp_records_${new Date().toISOString().replace(/[:.]/g, "-")}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function csvCell(v) {
+      if (v === null || v === undefined) return "";
+      const s = String(v);
+      return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    }
+
+    function bindUi() {
+      $('serialEventsExport').addEventListener('click',exportSerialEvents);
+      $('serialStatsExport').addEventListener('click',exportSerialStats);
+      $('serialEventsReset').addEventListener('click',()=>{resetSerialEventStats(true);renderSerialEvents();});
+      $("connectButton").addEventListener("click", connectSerial);
+      $("disconnectButton").addEventListener("click", disconnectSerial);
+      $("sendButton").addEventListener("click", () => sendSerialText($("sendText").value));
+      $("sendCtrlCButton").addEventListener("click", () => sendSerialText("\x03"));
+      $("clearButton").addEventListener("click", resetData);
+      $("exportButton").addEventListener("click", exportCsv);
+      $("sampleButton").addEventListener("click", () => { resetData(); state.inputMode='sample'; feedText(demoLog + "\n", true); flushParser(); });
+      $("parsePasteButton").addEventListener("click", () => { resetData(); state.inputMode='history'; feedText($("pasteArea").value + "\n", true); flushParser(); });
+      $("appendPasteButton").addEventListener("click", () => { flushParser(); state.inputMode='history'; feedText($("pasteArea").value + "\n", true); flushParser(); });
+      $("maxPoints").addEventListener("change", () => { trimRecordCacheIfNeeded(true); state.derivedDirty = true; resetChartZoom("delayCanvas"); resetChartZoom("offsetCanvas"); scheduleUiUpdate(true); });
+      $("initialViewPoints").addEventListener("change", () => { resetChartZoom("delayCanvas"); resetChartZoom("offsetCanvas"); scheduleUiUpdate(true); });
+      $("drawQuality").addEventListener("change", () => { drawCharts(); });
+      $("themeButton").addEventListener("click", () => {
+        const body = document.body;
+        const dark = body.getAttribute("data-theme") === "dark";
+        body.setAttribute("data-theme", dark ? "light" : "dark");
+        $("themeButton").textContent = dark ? "深色模式" : "浅色模式";
+        drawCharts();
+      });
+      window.addEventListener("resize", drawCharts);
+      $("sendText").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") sendSerialText($("sendText").value);
+      });
+    }
+
+    bindUi();
+    bindChartInteractions();
+    updateDashboard();
+    if (!("serial" in navigator)) setStatus("serial", "浏览器不支持 Web Serial");
+  </script>
+  <script>
+  (() => {
+    const el = id => document.getElementById(id);
+    const panel = { data: null, mode: 'live', busy: false, previous: null, tablePage:0, tablePinned:false, tableRows:[], tableAttention:[], tableCapture:null, tableMode:null, available: location.protocol === 'http:' && ['127.0.0.1','localhost'].includes(location.hostname) };
+    const number = v => Number(v || 0).toLocaleString('zh-CN');
+    const clock = seconds => new Date(Number(seconds)*1000).toLocaleTimeString('zh-CN',{hour12:false});
+    const names = {LOCKED:'同步正常',HOLDOVER:'守时',REACQUIRE:'重新捕获',INVALID:'时间无效',UNKNOWN:'旧包／未知',MALFORMED:'格式错误'};
+    function message(text) { el('udpMessage').textContent = text; }
+    async function request(path, method='GET') {
+      const response = await fetch(path,{method,cache:'no-store'});
+      const data = await response.json();
+      if(!response.ok) throw new Error(data.error || '请求失败');
+      return data;
+    }
+    function traffic(data) {
+      const canvas = el('udpTraffic'), context = canvas.getContext('2d');
+      const width = Math.max(220,canvas.clientWidth), height = 180, ratio = window.devicePixelRatio || 1;
+      canvas.width = Math.round(width*ratio); canvas.height = height*ratio; context.scale(ratio,ratio);
+      context.clearRect(0,0,width,height);
+      const series = (data.timeline || []).slice(-300).map(p=>({...p}));
+      if(data.mode !== 'archive' && data.running && series.length) {
+        const end = Math.floor(data.now);
+        for(let sec=Math.max(series[series.length-1].second+1,end-299);sec<=end;sec++) series.push({second:sec,packets:0});
+        if(series.length>300) series.splice(0,series.length-300);
+      }
+      const fg = getComputedStyle(document.body).getPropertyValue('--text2').trim() || '#777';
+      context.fillStyle=fg; context.font='12px sans-serif'; context.fillText('UDP 每秒收包数 · 最近最多 300 秒',8,18);
+      if(!series.length) return;
+      const max = Math.max(1,...series.map(p=>p.packets)), left=45, top=32, bottom=150, right=width-12;
+      context.fillText(number(max),2,top+8);context.fillText('0',25,bottom);
+      context.strokeStyle='#007aff';context.lineWidth=2;context.beginPath();
+      series.forEach((p,i)=>{const x=left+(right-left)*i/Math.max(1,series.length-1), y=bottom-(bottom-top)*p.packets/max;i?context.lineTo(x,y):context.moveTo(x,y);});context.stroke();
+      context.fillText(clock(series[0].second),left,174);context.textAlign='right';context.fillText(clock(series[series.length-1].second),right,174);context.textAlign='left';
+    }
+    function renderUdpRows(data) {
+      if(panel.tableCapture!==data.capture || panel.tableMode!==data.mode) {panel.tablePinned=false;panel.tablePage=0;}
+      if(!panel.tablePinned) {
+        panel.tableRows=data.recent||[];
+        panel.tableAttention=data.attention_recent || panel.tableRows.filter(row=>row.time_quality!=='LOCKED');
+        panel.tableCapture=data.capture;panel.tableMode=data.mode;
+        if(!panel.tablePinned)panel.tablePage=0;
+      }
+      const rows=el('udpOnlyAttention').checked?panel.tableAttention:panel.tableRows;
+      const size=Number(el('udpPageSize').value)||50, pages=Math.max(1,Math.ceil(rows.length/size));
+      panel.tablePage=Math.min(panel.tablePage,pages-1);
+      const start=panel.tablePage*size;
+      el('udpRows').replaceChildren();
+      for(const row of rows.slice(start,start+size)) {
+        const tr=document.createElement('tr');
+        if(row.time_quality!=='LOCKED')tr.className='udp-attention';
+        for(const value of [new Date(row.received_at).toLocaleTimeString('zh-CN',{hour12:false}),row.sequence,row.time_quality||'错误',row.timestamp,row.disposition]) {
+          const td=document.createElement('td');td.textContent=value??'—';tr.appendChild(td);
+        }el('udpRows').appendChild(tr);
+      }
+      if(!rows.length){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=5;td.textContent=el('udpOnlyAttention').checked?'尚未收到关注状态的UDP包；串口状态事件在上方面板独立记录。':'尚无UDP包';tr.appendChild(td);el('udpRows').appendChild(tr);}
+      el('udpPagePrev').disabled=panel.tablePage===0;
+      el('udpPageNext').disabled=panel.tablePage>=pages-1;
+      el('udpPageInfo').textContent=`第 ${panel.tablePage+1}/${pages} 页 · 缓存 ${number(rows.length)} 条${panel.tablePinned?' · 列表已冻结':''} · 完整数据见CSV`;
+    }
+    function render(data) {
+      panel.data=data; panel.lastSuccessMs=Date.now();
+      const archive = data.mode === 'archive', idle = data.idle_s;
+      if(data.error) message('UDP接收错误：'+data.error);
+      el('udpTotal').textContent=number(data.total);
+      el('udpStatus').textContent=data.error?'接收错误':archive?'历史记录':!data.running?'已停止':!data.total?'等待数据':idle>=1?`未收到新包 ${idle.toFixed(1)}秒`:'正在收包';
+      el('udpQuality').textContent=data.last?(names[data.last.time_quality] || data.last.time_quality || '格式错误')+((archive||!data.running||idle>=1)?'（历史）':''):'—';
+      el('udpQuality').style.color=!data.last||archive||!data.running||idle>=1?'var(--text2)':data.last.time_quality==='LOCKED'?'var(--green)':'var(--red)';
+      const latest=(data.timeline||[]).slice(-2);
+      el('udpRate').textContent=archive?'历史回放':!data.running?'—':idle>=1?'0 包/秒':latest.length?number(latest[0].packets)+' 包/秒':'—';
+      el('udpCounts').replaceChildren();
+      for(const name of Object.keys(names)) { const tag=document.createElement('span');tag.className='udp-count '+((data.counts?.[name]||0)?(name==='LOCKED'?'udp-positive':'udp-attention'):'udp-zero');tag.textContent=`${name}：${number(data.counts?.[name])}`;el('udpCounts').appendChild(tag); }
+      el('udpDiagnostics').textContent=`断流间隔：${number(data.gap_count)} 次 · 最大 ${Number(data.max_gap_s||0).toFixed(3)} 秒 · 序号回退／重启：${number(data.sequence_resets)} · 向前序号缺口：${number(data.sequence_missing)} · 重复：${number(data.duplicates)} · 时间戳非递增：${number(data.timestamp_backwards)}${data.summary_matches===false?' · 注意：CSV与summary包数不一致':''}`;
+      const serial=state.clockStatus?.time_quality || '未知';
+      el('udpCompare').textContent=`当前串口时间质量：${serial} · ${archive?'历史UDP记录':'UDP最后一包'}：${data.last?.time_quality||'未知'}。两者采样时刻不同，不能仅凭显示不一致判断故障。`;
+      renderUdpRows(data);
+      el('udpEvents').replaceChildren();
+      for(const event of data.events||[]) {const div=document.createElement('div');div.textContent=`${clock(event.at)} · ${event.text}`;el('udpEvents').appendChild(div);}
+      if(!data.events?.length) el('udpEvents').textContent='暂无事件';
+      traffic(data);
+    }
+    async function refreshList() {
+      const selected=el('udpArchive').value, list=await request('/api/captures');el('udpArchive').replaceChildren();
+      const empty=document.createElement('option');empty.value='';empty.textContent='选择历史 UDP 记录';el('udpArchive').appendChild(empty);
+      for(const name of list) {const option=document.createElement('option');option.value=name;option.textContent=name;el('udpArchive').appendChild(option);}
+      el('udpArchive').value=list.includes(selected)?selected:'';
+    }
+    async function action(task) {
+      if(!panel.available) {message('请通过“启动整合上位机.cmd”打开本机服务页面；当前 HTML 的串口功能仍可使用。');return;}
+      if(panel.busy)return;panel.busy=true;
+      try {await task();}catch(error){message('UDP：'+error.message);if(error instanceof TypeError && panel.mode==='live'){el('udpStatus').textContent='桥接连接中断';el('udpRate').textContent='—';if(panel.data?.last)el('udpQuality').textContent=(names[panel.data.last.time_quality]||'未知')+'（历史）';}}finally{panel.busy=false;}
+    }
+    el('udpStart').addEventListener('click',()=>action(async()=>{panel.mode='live';render(await request('/api/start','POST'));message('UDP正在后台记录；请保持开发板供电。需要结束时点击“停止并保存”。');}));
+    el('udpStop').addEventListener('click',()=>action(async()=>{panel.mode='live';const data=await request('/api/stop','POST');render(data);message(`已停止并保存：${data.capture||'尚未创建记录'}`);await refreshList();}));
+    el('udpLive').addEventListener('click',()=>action(async()=>{panel.mode='live';render(await request('/api/state'));message('查看实时 UDP；是否正在记录请看收包状态。');}));
+    el('udpRefresh').addEventListener('click',()=>action(refreshList));
+    el('udpLoad').addEventListener('click',()=>action(async()=>{const name=el('udpArchive').value;if(!name)throw new Error('请先选择历史记录');const data=await request('/api/archive?name='+encodeURIComponent(name));panel.mode='archive';render(data);message(`正在分析历史记录：${name}。若后台已开始记录，查看历史不会停止它。`);}));
+    el('udpDownload').addEventListener('click',()=>action(async()=>{const data=panel.data;if(!data?.capture)throw new Error('尚无可导出的记录');if(data.mode!=='archive'&&data.running)throw new Error('请先点击“停止并保存”再导出');const link=document.createElement('a');link.href='/api/download?name='+encodeURIComponent(data.capture);link.download='packets.csv';link.click();}));
+    window.addEventListener('resize',()=>{if(panel.data)traffic(panel.data);});
+    el('udpOnlyAttention').addEventListener('change',()=>{panel.tablePage=0;panel.tablePinned=false;if(panel.data)renderUdpRows(panel.data);});
+    el('udpPageSize').addEventListener('change',()=>{panel.tablePage=0;panel.tablePinned=false;if(panel.data)renderUdpRows(panel.data);});
+    el('udpPagePrev').addEventListener('click',()=>{panel.tablePinned=true;panel.tablePage=Math.max(0,panel.tablePage-1);if(panel.data)renderUdpRows(panel.data);});
+    el('udpPageNext').addEventListener('click',()=>{panel.tablePinned=true;panel.tablePage++;if(panel.data)renderUdpRows(panel.data);});
+    el('udpRowsLive').addEventListener('click',()=>{panel.tablePinned=false;panel.tablePage=0;if(panel.data)renderUdpRows(panel.data);});
+    window.udpDashboard={render, panel, refreshList, renderUdpRows};
+    if(panel.available) {
+      action(async()=>{await refreshList();render(await request('/api/state'));message('UDP桥接已连接。点击“开始 UDP 记录”，或选择已有记录分析；串口连接独立操作。');});
+      setInterval(()=>{if(panel.mode==='live')action(async()=>render(await request('/api/state')));},1000);
+    }
+  })();
+  </script>
+<script>
+
+(() => {
+ const e=id=>document.getElementById(id), main=document.querySelector('main');
+ const template=document.createElement('template');template.innerHTML="\n<section id=\"productApp\">\n<div class=\"p-heading\"><div><h2>PTP 同步状态与偏差监测</h2><div class=\"p-muted\">PTP 同步与采集数据监测</div></div><div class=\"p-actions\" id=\"pActions\"></div></div>\n<div class=\"p-source\" id=\"pSource\">等待连接串口或导入日志；UDP 可独立记录。</div>\n<div class=\"p-cards\"><article class=\"p-card\"><div class=\"p-row\"><span class=\"p-label\">设备当前时间质量</span><span class=\"p-tag\" id=\"pCode\">UNKNOWN</span></div><div class=\"p-value\" id=\"pClock\">等待状态</div><div class=\"p-muted\" id=\"pClockSub\">连接采集板串口后显示</div><div class=\"p-meta\"><span id=\"pReady\">普通锁定 —</span><span id=\"pFine\">精细锁定 —</span></div></article>\n<article class=\"p-card p-accent\"><div class=\"p-row\"><span class=\"p-label\">最后收到的采集包 · 时间质量</span><span class=\"p-tag\" id=\"pReceive\">等待收包</span></div><div class=\"p-value\" id=\"pPacket\">—</div><div class=\"p-muted\" id=\"pPacketSub\">UDP 包内质量标签</div><div class=\"p-meta\"><span id=\"pRate\">最近包率 —</span><span id=\"pPacketAge\">距最后一包 —</span></div></article>\n<article class=\"p-card\"><div class=\"p-row\"><span class=\"p-label\">同步偏差 · 性能证据</span><span class=\"p-tag\" id=\"pPrecisionTag\">无测量</span></div><div class=\"p-value p-big\" id=\"pOffset\">—</div><div class=\"p-muted\" id=\"pOffsetSub\">相对主时钟的估计偏差</div></article></div>\n<div class=\"p-notice\" id=\"pNotice\" role=\"status\"><span><strong id=\"pNoticeTitle\">等待观测</strong><span id=\"pNoticeText\">连接串口查看同步状态。</span></span><time id=\"pNoticeTime\"></time></div>\n<div class=\"p-grid\"><article class=\"p-panel\"><div class=\"p-row\"><div><h3>同步偏差与稳定性</h3><p class=\"p-sub\" id=\"pChartSource\">等待串口测量</p></div><div class=\"p-seg\" role=\"group\" aria-label=\"曲线类型\"><button id=\"pOffsetTab\" aria-pressed=\"true\">偏差</button><button id=\"pDelayTab\" aria-pressed=\"false\">延时</button></div></div><canvas id=\"pChart\" aria-label=\"同步偏差或延时曲线\"></canvas><div class=\"p-chart-foot\"><div class=\"p-legend\"><span><b></b>测量</span><span><b class=\"p-filter\"></b>滤波</span><span><b class=\"p-reject\"></b>未参与校时</span></div><div class=\"p-range\"><div class=\"p-seg\" role=\"group\" aria-label=\"曲线时间范围\"><button id=\"pRecent\" aria-pressed=\"true\">最近60秒</button><button id=\"pAll\" aria-pressed=\"false\">全部时间</button></div><span id=\"pRangeText\">全部时间指当前缓存记录</span></div></div><div id=\"pChartTip\">点击曲线查看读数</div></article>\n<article class=\"p-panel\"><div class=\"p-row\"><div><h3>时间质量随包传递</h3><p class=\"p-sub\" id=\"pCountsSource\">接收器逐包统计</p></div><span class=\"p-tag\" id=\"pUdpMode\">未连接</span></div><div class=\"p-count-head\"><span id=\"pTotal\">0</span> <small>已收采集包</small></div><div class=\"p-bars\" id=\"pBars\"></div><div class=\"p-row p-quality-foot\"><span class=\"p-muted\" id=\"pRatio\">LOCKED 占比 —</span><button id=\"pAttention\" class=\"p-link\">查看关注记录 →</button></div><p class=\"p-sub\" id=\"pDiagnostics\">断流与序号情况待观测</p></article></div>\n<section class=\"p-panel p-events\"><div class=\"p-row\"><div><h3>最近状态变化</h3><p class=\"p-sub\" id=\"pEventSource\">串口与 UDP 事件各自记录来源</p></div><button id=\"pAllEvents\" class=\"p-link\">展开事件统计 →</button></div><div class=\"p-event-grid\" id=\"pEvents\"></div></section>\n<div id=\"pDetailsArea\"><details class=\"p-details\" id=\"pConnection\"><summary>连接设置与串口控制</summary><div class=\"p-detail-body\"></div></details><details class=\"p-details\" id=\"pSerial\"><summary>锁定与恢复记录</summary><div class=\"p-detail-body\"></div></details><details class=\"p-details\" id=\"pUdp\"><summary>UDP 逐包明细、记录管理与 CSV 导出</summary><div class=\"p-detail-body\"></div></details><details class=\"p-details\" id=\"pLogs\"><summary>原始串口日志、最近测量与日志导入</summary><div class=\"p-detail-body\"><div class=\"p-actions\"><button id=\"pSaveRaw\">保存当前日志缓存</button><span class=\"p-muted\" id=\"pRawHint\">仅保存当前显示缓存，长度在连接设置中调整。</span></div></div></details><details class=\"p-details\" id=\"pAdvanced\"><summary>高级测量：四时间戳、校准值与交互缩放</summary><div class=\"p-detail-body\"></div></details></div>\n</section>\n";main.prepend(template.content);
+ document.querySelector('.brand h1').textContent='采集时间质量监测';document.querySelector('.brand small').textContent='PTP SYNC & PACKET QUALITY';
+ const nav=document.createElement('div');nav.className='p-health';nav.innerHTML='<span id="pSerialNav">串口 · 未连接</span><span id="pUdpNav">UDP · 未连接</span><span id="pFineNav">精锁 · 未知</span>';document.querySelector('.nav').insertBefore(nav,document.querySelector('.header-actions'));
+ const focus=document.createElement('button');focus.id='pFocus';focus.textContent='专注演示';focus.setAttribute('aria-pressed','false');document.querySelector('.header-actions').prepend(focus);
+ focus.onclick=()=>{const on=document.body.classList.toggle('p-focus');focus.textContent=on?'退出专注':'专注演示';focus.setAttribute('aria-pressed',String(on));render();};
+ const move=(node,target)=>{if(node)e(target).querySelector('.p-detail-body').append(node);};
+ move(document.querySelector('main > .controls'),'pConnection');move(e('serialEventPanel'),'pSerial');move(e('udpPanel'),'pUdp');move(document.querySelector('main > .log-layout'),'pLogs');move(e('pasteArea').closest('section'),'pLogs');
+ for(const s of ['main > .cards','main > .t-grid','main > .charts'])move(document.querySelector(s),'pAdvanced');
+ for(const id of ['connectButton','disconnectButton'])e('pActions').append(e(id));
+ const udpBody=e('pUdp').querySelector('.p-detail-body');
+ udpBody.prepend(e('pCountsSource').closest('article'));
+ udpBody.prepend(e('pPacket').closest('article'));
+ e('pUdp').querySelector('summary').textContent='UDP 采集验证（可选）：收包、逐包质量与导出';
+ const udpHelp=document.createElement('p');udpHelp.className='p-muted';udpHelp.textContent='用于确认网口采集数据到达电脑，以及每包的时间质量、序号缺口和断流。查看串口同步偏差时可以保持折叠；串口断开不会停止独立的UDP记录。';udpBody.prepend(udpHelp);
+ e('pUdpNav').style.cursor='pointer';e('pUdpNav').onclick=()=>{e('pUdp').open=true;e('pUdp').scrollIntoView({behavior:'smooth'});};
+ const oldFooter=document.querySelector('main > .footer');if(oldFooter)oldFooter.remove();
+ const open=id=>{document.body.classList.remove('p-focus');focus.textContent='专注演示';focus.setAttribute('aria-pressed','false');e(id).open=true;e(id).scrollIntoView({behavior:'smooth',block:'start'});};
+ e('pAttention').onclick=()=>{e('udpOnlyAttention').checked=true;e('udpOnlyAttention').dispatchEvent(new Event('change'));open('pUdp');};e('pAllEvents').onclick=()=>open('pSerial');
+ const oldDraw=drawCharts;drawCharts=()=>{if(e('pAdvanced').open)oldDraw();};e('pAdvanced').addEventListener('toggle',()=>{if(e('pAdvanced').open)oldDraw();});e('pUdp').addEventListener('toggle',()=>{if(e('pUdp').open)window.dispatchEvent(new Event('resize'));});
+ e('pSaveRaw').onclick=()=>{flushParser();flushRawLog(true);if(!state.rawText){text('pRawHint','当前日志缓存为空；请检查日志显示是否暂停。');return;}text('pRawHint','已保存当前显示缓存，不含已淘汰的早期日志。');const blob=new Blob([state.rawText],{type:'text/plain;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='dut_serial_log.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+ let lastLiveEnd=null;
+ let range='recent',kind='offset',cachedRevision=-1,cachedRecords=null,points=[],lastSelection=null,chartMap=null;
+ function buildPoints(){if(cachedRevision===state.presentationRevision&&cachedRecords===state.records)return points;cachedRevision=state.presentationRevision;cachedRecords=state.records;points=[];let previous=null,t=0,segment=0;for(const r of state.records){let stamp;try{stamp=hexToBigInt(r.t1);}catch{stamp=null;}const mode=r.input_mode||'history';if(previous){const delta=mode==='live'&&previous.mode==='live'?((r.observed_ms-previous.r.observed_ms)/1000):(stamp!==null&&previous.stamp!==null?Number(stamp-previous.stamp)/1e9:NaN);if(mode!==previous.mode||!Number.isFinite(delta)||delta<0){segment++;t+=.001;}else {if(delta>2)segment++;t+=delta;}}points.push({t,r,segment});previous={r,stamp,mode};}return points;}
+ function chartWindow(now=Date.now()){
+  const list=buildPoints(),last=list.at(-1),live=state.inputMode==='live'&&state.keepReading&&last?.r.input_mode==='live';
+  let end=last?.t||0;
+  if(live){end+=Math.max(0,(now-last.r.observed_ms)/1000);lastLiveEnd=end;}
+  else if(state.inputMode==='live'&&last?.r.input_mode==='live'&&lastLiveEnd!==null)end=Math.max(end,lastLiveEnd);
+  else lastLiveEnd=null;
+  const start=range==='recent'?Math.max(0,end-60):(list[0]?.t||0);
+  return {points:list.filter(p=>p.t>=start&&p.t<=end),start,end};
+ }
+
+ const sourceName=()=>state.inputMode==='sample'?'示例日志 · 非实测':state.inputMode==='history'?'导入日志 · 历史回放':state.inputMode==='live'?'实时串口观测':'等待串口数据';
+ function summary(now=Date.now()){
+  const s=state.clockStatus||{},last=state.records.at(-1),live=state.inputMode==='live',statusAge=s.observed_ms?Math.max(0,(now-s.observed_ms)/1000):Infinity,fresh=live&&state.keepReading&&s.input_mode==='live'&&statusAge<3,q=fresh?s.time_quality:null;
+  const measurementFresh=fresh&&!s.staleMeasurement&&last?.input_mode==='live'&&now-last.observed_ms<3000;
+  const u=window.udpDashboard?.panel,d=u?.data,archive=u?.mode==='archive',bridgeFresh=!!d&&(archive||now-(u.lastSuccessMs||0)<3000),packetFresh=bridgeFresh&&!archive&&d.running&&!d.error&&d.total>0&&Number.isFinite(d.idle_s)&&d.idle_s+(now-u.lastSuccessMs)/1000<1;
+  return {s,last,live,statusAge,fresh,q,measurementFresh,u,d,bridgeFresh,archive,packetFresh};
+ }
+ function text(id,value){if(e(id).textContent!==String(value))e(id).textContent=value;}
+ function render(){
+  const now=Date.now(),a=summary(now),{s,last,q,d}=a,history=!a.live&&state.records.length>0,source=sourceName();
+  text('pSource',source+(state.inputMode==='live'&&!state.keepReading?' · 串口已断开，保留历史记录':'')+'；串口时钟状态与 UDP 包标签分别观测。');
+  text('pSerialNav','串口 · '+(state.keepReading?'已连接':state.inputMode==='live'?'已断开':'未连接'));text('pUdpNav','UDP · '+(!a.bridgeFresh?'未连接':a.archive?'历史':e('udpStatus').textContent));text('pFineNav','精锁 · '+(a.fresh?(s.fine_lock===1?'已锁定':s.fine_lock===0?'未锁定':'未知'):'未知'));
+  text('pCode',q||'UNKNOWN');text('pClock',q?TIME_QUALITY_NAMES[q]:history?'历史状态':a.live?'状态待更新':'等待状态');e('pClock').className='p-value '+(q==='LOCKED'?'p-good':q==='INVALID'?'p-bad':q?'p-warn':'p-neutral');
+  text('pClockSub',a.fresh?('恢复阶段：'+(s.recovery||'未上报')):s.time_quality?'最后上报 '+s.time_quality+'（历史）':'连接采集板串口后显示');
+  text('pReady','普通锁定 '+(a.fresh?(s.ready===1?'已锁定':s.ready===0?'未锁定':'未知'):'—'));text('pFine','精细锁定 '+(a.fresh?(s.fine_lock===1?'已锁定':s.fine_lock===0?'未锁定':'未知'):'—'));
+  text('pReceive',!a.bridgeFresh?'接收服务未连接':a.archive?'历史记录':e('udpStatus').textContent);text('pPacket',d?.last?.time_quality||'—');e('pPacket').className='p-value '+(!a.packetFresh?'p-neutral':d.last.time_quality==='LOCKED'?'p-good':'p-bad');
+  text('pPacketSub',d?.last?(a.packetFresh?'标签随采集包传递':'最后一包为历史记录'):'尚未收到采集包');
+  text('pRate','最近包率 '+(a.packetFresh?e('udpRate').textContent:a.archive?'历史回放':'—'));text('pPacketAge','距最后一包 '+(Number.isFinite(d?.idle_s)?(d.idle_s+(a.archive?0:Math.max(0,(now-(a.u.lastSuccessMs||now))/1000))).toFixed(1)+' s':'—'));
+  text('pOffset',a.measurementFresh?formatNs(last.offset_ns):'—');text('pPrecisionTag',a.measurementFresh?(last.sample_valid===0?'未参与校时':s.fine_lock===1?'精细锁定':'未精细锁定'):history?'历史测量':'等待新测量');
+  text('pOffsetSub',a.measurementFresh?measurementQualityText(last):last?'最后测量 '+formatNs(last.offset_ns)+'（历史）':'相对主时钟的估计偏差；非外部精度验证');
+  let title='等待观测',reason='连接采集板串口查看时钟状态，开始 UDP 记录查看逐包质量。',tone='neutral',duration='';
+  if(history){title=source;reason='曲线与统计来自导入记录，不代表当前开发板状态。';}
+  else if(a.live&&!a.fresh){title='串口状态未更新';reason=state.keepReading?'未收到新的有效时钟状态，暂不显示当前锁定和精度。':'串口已断开，最后的锁定状态和测量保留为历史。';tone='warn';duration=Number.isFinite(a.statusAge)?'距状态更新 '+a.statusAge.toFixed(1)+' s':'';}
+  else if(q){title=TIME_QUALITY_NAMES[q];tone=q==='LOCKED'?'good':q==='INVALID'?'bad':'warn';reason={LOCKED:s.fine_lock===1?'普通同步与精细锁定均已上报。':'普通同步已恢复，等待精细锁定收敛。',HOLDOVER:'同步参考中断，当前依靠本地补偿守时；等待新的参考测量。',INVALID:'设备已上报时间无效；检查采集停流与链路恢复情况。',REACQUIRE:'同步参考恢复，设备正在重新捕获。'}[q];const ev=getSerialEvents().events.filter(v=>v.kind==='TIME_QUALITY'&&v.input_mode==='live'&&v.to===q).at(-1);if(ev)duration='本状态已观测 '+Math.max(0,(now-Date.parse(ev.observed_at))/1000).toFixed(1)+' s';}
+  if(q==='LOCKED'&&a.bridgeFresh&&!a.archive&&d?.running&&!a.packetFresh){tone='warn';reason+=' UDP 暂无新包，详情中可查看收包间隔。';}
+  text('pNoticeTitle',title);text('pNoticeText',reason);text('pNoticeTime',duration);e('pNotice').dataset.tone=tone;
+  text('pCountsSource',a.archive?'历史文件的逐包标签统计':'接收器实际收到的逐包标签统计');text('pUdpMode',!a.bridgeFresh?'连接待恢复':a.archive?'历史回放':'实际接收');text('pTotal',formatInteger(d?.total||0));
+  for(const name of ['LOCKED','HOLDOVER','REACQUIRE','INVALID','UNKNOWN','MALFORMED']){const val=d?.counts?.[name]||0,el=e('pCount'+name);el.textContent=formatInteger(val);el.className=val?(name==='LOCKED'?'p-good':'p-bad'):'p-neutral';e('pBar'+name).style.width=(d?.total?val/d.total*100:0)+'%';}
+  text('pRatio','LOCKED 占比 '+(d?.total?((d.counts?.LOCKED||0)/d.total*100).toFixed(2)+'%':'—'));text('pDiagnostics',`断流 ${d?.gap_count||0} 次 · 序号缺口 ${formatInteger(d?.sequence_missing||0)} · 重复 ${d?.duplicates||0}`);
+  const events=getSerialEvents().events.slice(-3).reverse();e('pEvents').replaceChildren();if(!events.length){const p=document.createElement('p');p.className='p-muted';p.textContent='暂无串口状态变化；接收 UDP 后可在逐包明细中查看质量与断流事件。';e('pEvents').append(p);}for(const ev of events){const box=document.createElement('div');box.className='p-event';for(const [tag,value] of [['small',new Date(ev.observed_at).toLocaleTimeString('zh-CN')+' · '+(ev.input_mode==='live'?'串口接收':ev.input_mode==='sample'?'示例解析':'历史解析')],['strong',ev.kind==='TIME_QUALITY'?'时间质量':SERIAL_ACTION_NAMES[ev.kind]||ev.kind],['p',ev.detail]]){const node=document.createElement(tag);node.textContent=value;box.append(node);}e('pEvents').append(box);}
+  text('pEventSource','');
+  for(const id of ['sampleButton','parsePasteButton','appendPasteButton'])e(id).disabled=state.keepReading;
+  draw(now);
+ }
+ function draw(now=Date.now()){
+  const view=chartWindow(now),c=e('pChart'),ctx=c.getContext('2d'),w=c.clientWidth,h=c.clientHeight,ratio=devicePixelRatio||1;c.width=w*ratio;c.height=h*ratio;ctx.scale(ratio,ratio);
+  const dark=document.body.dataset.theme==='dark',fg=dark?'#c0cad9':'#52627a',grid=dark?'#303747':'#e7edf5',right=w-14,top=16,bottom=h-30,span=Math.max(1,view.end-view.start),isDelay=kind==='delay',raw=isDelay?'delay_ns':'offset_ns',filtered=isDelay?'filt_delay_plot_ns':'filt_offset_plot_ns';
+  let min=Infinity,max=-Infinity;for(const p of view.points){for(const key of [raw,filtered])if(isFiniteNumber(p.r[key])){min=Math.min(min,p.r[key]);max=Math.max(max,p.r[key]);}}
+  const modes=[...new Set(view.points.map(p=>p.r.input_mode||'history'))],names={live:'实时串口',history:'历史日志',sample:'示例（非实测）',idle:'导入记录'},mixed=modes.length>1,windowSource=modes.length?(mixed?'混合记录：':'')+modes.map(m=>names[m]||m).join(' / '):sourceName();const rangeName=(range==='all'?'全部缓存':'最近60秒')+(mixed?'（混合）':modes.includes('sample')?'（示例）':'');
+  text('pChartSource',windowSource+(state.inputMode==='live'&&!state.keepReading?' · 已暂停统计':''));e('pChartSource').title='实时横轴按本机接收间隔，历史日志按主时钟t1间隔；曲线保留异常点。';
+  text('pRangeText',`${rangeName} · ${view.start.toFixed(1)}–${view.end.toFixed(1)} s · ${formatInteger(view.points.length)} 点${state.recordsDropped?' · 早期缓存已淘汰':''}`);
+  for(const [id,on] of [['pRecent',range==='recent'],['pAll',range==='all'],['pOffsetTab',kind==='offset'],['pDelayTab',kind==='delay']])e(id).setAttribute('aria-pressed',String(on));
+  if(!Number.isFinite(min)){min=-50;max=50;}if(!isDelay){min=Math.min(min,-50);max=Math.max(max,50);}const pad=Math.max(10,(max-min)*.12);min-=pad;max+=pad;const unit=chooseTimeUnit([min,max]);ctx.font='12px Segoe UI,Microsoft YaHei';const yLabels=Array.from({length:5},(_,i)=>((max-(max-min)*i/4)/unit.scale).toFixed(unit.scale===1?0:2));const left=Math.max(48,Math.ceil(Math.max(...yLabels.map(label=>ctx.measureText(label).width)))+16),yAt=v=>bottom-(v-min)/(max-min)*(bottom-top),xAt=t=>left+(t-view.start)/span*(right-left);
+  if(!isDelay){ctx.fillStyle=dark?'rgba(20,134,92,.18)':'rgba(20,134,92,.09)';ctx.fillRect(left,yAt(50),right-left,yAt(-50)-yAt(50));}
+  ctx.font='12px Segoe UI,Microsoft YaHei';ctx.textAlign='right';ctx.fillStyle=fg;for(let i=0;i<=4;i++){const y=top+(bottom-top)*i/4;ctx.strokeStyle=grid;ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(right,y);ctx.stroke();ctx.fillStyle=fg;ctx.fillText(yLabels[i],left-7,y+4);}ctx.textAlign='center';for(let i=0;i<=4;i++)ctx.fillText((view.start+(view.end-view.start)*i/4).toFixed(1)+' s',left+(right-left)*i/4,bottom+21);ctx.textAlign='left';ctx.fillText(unit.label||unit.unit||'ns',8,11);
+  if(!view.points.length){ctx.textAlign='center';ctx.fillText(state.records.length?'此窗口暂无新测量':'等待串口测量或导入日志',(left+right)/2,(top+bottom)/2);chartMap=null;return;}
+  const last=points.at(-1);if(last&&view.end-last.t>1){const x=xAt(Math.max(view.start,last.t));ctx.fillStyle=dark?'#262e3c':'#f1f4f9';ctx.fillRect(x,top,right-x,bottom-top);}
+  // Keep min/max points per pixel bucket so spikes remain visible with large caches.
+  for(const key of [raw,filtered]){const buckets=new Map();for(const p of view.points){if(!isFiniteNumber(p.r[key]))continue;const bucket=Math.floor(xAt(p.t));let b=buckets.get(bucket);if(!b)buckets.set(bucket,b={first:p,last:p,min:p,max:p});b.last=p;if(p.r[key]<b.min.r[key])b.min=p;if(p.r[key]>b.max.r[key])b.max=p;}const drawPoints=[];for(const b of buckets.values())drawPoints.push(...[...new Set([b.first,b.min,b.max,b.last])].sort((a,b)=>a.t-b.t));ctx.beginPath();ctx.lineWidth=key===raw?1.6:1.3;ctx.strokeStyle=key===raw?'#2763ed':'#9c70cc';let prev=null;for(const p of drawPoints){const x=xAt(p.t),y=yAt(p.r[key]);if(!prev||prev.segment!==p.segment)ctx.moveTo(x,y);else ctx.lineTo(x,y);prev=p;}ctx.stroke();if(drawPoints.length===1){ctx.beginPath();ctx.arc(xAt(drawPoints[0].t),yAt(drawPoints[0].r[key]),2.5,0,Math.PI*2);ctx.fillStyle=ctx.strokeStyle;ctx.fill();}}
+  ctx.fillStyle='#d33f4d';for(const p of view.points)if(p.r.sample_valid===0&&isFiniteNumber(p.r[raw])){ctx.beginPath();ctx.arc(xAt(p.t),yAt(p.r[raw]),2.2,0,Math.PI*2);ctx.fill();}
+  chartMap={view,left,right,xAt};if(lastSelection){const p=view.points.find(p=>p.r===lastSelection);if(p){ctx.strokeStyle='#9aabc2';ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(xAt(p.t),top);ctx.lineTo(xAt(p.t),bottom);ctx.stroke();ctx.setLineDash([]);}}
+ }
+ e('pChart').onclick=event=>{if(!chartMap)return;const rect=e('pChart').getBoundingClientRect(),x=event.clientX-rect.left;let nearest=null,distance=Infinity;for(const p of chartMap.view.points){const d=Math.abs(chartMap.xAt(p.t)-x);if(d<distance){nearest=p;distance=d;}}if(nearest){lastSelection=nearest.r;text('pChartTip',`${nearest.t.toFixed(3)} s · cycle=${nearest.r.cycle??'—'} · 偏差 ${formatNs(nearest.r.offset_ns)} · 延时 ${formatNs(nearest.r.delay_ns)} · ${measurementQualityText(nearest.r)}`);draw();}};
+ for(const [id,value] of [['pRecent','recent'],['pAll','all']])e(id).onclick=()=>{range=value;render();};for(const [id,value] of [['pOffsetTab','offset'],['pDelayTab','delay']])e(id).onclick=()=>{kind=value;render();};
+ for(const name of ['LOCKED','HOLDOVER','REACQUIRE','INVALID','UNKNOWN','MALFORMED']){const row=document.createElement('div');row.className='p-bar-row';row.innerHTML=`<span>${name}</span><span class="p-track"><i id="pBar${name}" style="${name==='LOCKED'?'':'background:var(--red)'}"></i></span><span id="pCount${name}">0</span>`;e('pBars').append(row);}
+ window.productDashboard={render,chartWindow,summary,get range(){return range;},get points(){return buildPoints();}};
+ window.addEventListener('resize',()=>render());render();setInterval(render,500);
+})();
+
+</script>
+</body>
+</html>

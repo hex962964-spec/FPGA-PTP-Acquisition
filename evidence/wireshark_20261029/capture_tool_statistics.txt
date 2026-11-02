@@ -1,0 +1,15 @@
+File name:           C:\Users\28049\.codex\visualizations\2026\10\26\01a17716-c686-7493-a046-a0693d4f05f8\report_readable_20261029\fpga_capture_20261029.pcapng
+Number of interfaces in file: 1
+Interface #0 info:
+                     Name = \Device\NPF_{3DFACBC0-7769-4D92-A828-24A878062ABB}
+                     Description = 以太网 5
+                     Encapsulation = Ethernet (1 - ether)
+                     Hardware = Realtek USB GbE Family Controller
+                     Capture length = 262144
+                     Time precision = nanoseconds (9)
+                     Time ticks per second = 1000000000
+                     Time resolution = 0x09
+                     Filter string = udp and (host 192.168.0.14 or host 192.168.0.5) and (port 319 or port 320 or port 6000)
+                     Operating system = 64-bit Windows 11 (25H2), build 26200
+                     Number of stat entries = 1
+                     Number of packets = 20000

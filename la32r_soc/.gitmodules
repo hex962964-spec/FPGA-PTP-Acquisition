@@ -1,0 +1,6 @@
+[submodule "rtl/ip/open-la500"]
+	path = rtl/ip/open-la500
+	url = https://gitee.com/loongson-edu/open-la500.git
+[submodule "rtl/ip/CNN"]
+	path = rtl/ip/CNN
+	url = https://gitee.com/xinhecuican/CNN_Accel

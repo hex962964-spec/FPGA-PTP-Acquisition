@@ -1,0 +1,69 @@
+{
+  "capture": "C:\\Users\\28049\\.codex\\visualizations\\2026\\10\\26\\01a17716-c686-7493-a046-a0693d4f05f8\\report_readable_20261029\\fpga_capture_20261029.pcapng",
+  "sha256": "ea18fe24a2fecd1ee5513ce8299cd8206cecc6be915d001d2e3bfab86ff298b7",
+  "packet_count": 20000,
+  "capture_duration_s": 4.366944313049316,
+  "first": {
+    "frame": 1,
+    "pc_time_epoch": "1793240855.976018900",
+    "sequence": 2312859,
+    "sample_timestamp_ns": "513624613681",
+    "version": 2,
+    "quality": 2,
+    "channel": 1,
+    "samples": 168,
+    "payload_bytes": 356,
+    "udp_length": 364,
+    "frame_length": 398,
+    "source_mac": "00:0a:35:01:fe:c0",
+    "destination_mac": "00:e0:4c:20:52:28"
+  },
+  "last": {
+    "frame": 20000,
+    "pc_time_epoch": "1793240860.342963300",
+    "sequence": 2332858,
+    "sample_timestamp_ns": "517992400988",
+    "version": 2,
+    "quality": 2,
+    "channel": 1,
+    "samples": 168,
+    "payload_bytes": 356,
+    "udp_length": 364,
+    "frame_length": 398,
+    "source_mac": "00:0a:35:01:fe:c0",
+    "destination_mac": "00:e0:4c:20:52:28"
+  },
+  "quality_counts": {
+    "2": 20000
+  },
+  "payload_length_counts": {
+    "356": 20000
+  },
+  "channel_counts": {
+    "1": 20000
+  },
+  "sample_count_counts": {
+    "168": 20000
+  },
+  "udp_streams": [
+    {
+      "source": "192.168.0.14",
+      "source_port": "1234",
+      "destination": "192.168.0.3",
+      "destination_port": "6000",
+      "packets": 20000
+    }
+  ],
+  "malformed_count": 0,
+  "missing_sequence": 0,
+  "duplicate_sequence": 0,
+  "backward_sequence": 0,
+  "nonincreasing_sample_timestamp": 0,
+  "timestamp_step_ns_min": 218400,
+  "timestamp_step_ns_max": 218401,
+  "timestamp_step_ns_mean": 218400.2853642682,
+  "capture_received": 20000,
+  "capture_dropped": 0,
+  "ptp_visible": false,
+  "note": "Only traffic addressed to this PC was observed; this capture does not validate PTP exchange timing or physical synchronization accuracy."
+}

@@ -1,0 +1,18 @@
+{
+  "kind": "stage2_host_receiver_validation_not_board_acceptance",
+  "date": "2026-10-22T17:07:46.500877",
+  "protocol_unit_tests": {
+    "passed": 7
+  },
+  "localhost_udp_test": "PASS synthetic V1/V2/invalid/malformed, CSV/raw JSONL/summary",
+  "fpga_or_firmware_changed": false,
+  "bit_used": "soc_top_6.bit",
+  "real_target_pc_udp_capture": "D:\\111.wenjian\\4.fpgatest1\\work\\udp_target_7\\board_udp_validation.json",
+  "files": {
+    "README.md": "3d0680e41a928ad0c404fd8e7f004ab7d7a3cbdbea3b30892349d4ccf4187d8b",
+    "receiver.py": "5902bdb6abd89b060103b1a6fddfa56f90ce19902003dc950de6e147535f25dd",
+    "test_loopback.py": "dd007a5812745566d90dc5b1c08fc0344755d5fea84be761a11529460b5f7132",
+    "test_receiver.py": "6de370846ae08c42797f2923158a1ea2eb9dab99f287a1b1269ee77bce9ac229",
+    "启动接收.cmd": "f932d8e5d29af9ce655a653ef4ee7b0ca335382e6b2e31ffb3f9c1fa47811003"
+  }
+}

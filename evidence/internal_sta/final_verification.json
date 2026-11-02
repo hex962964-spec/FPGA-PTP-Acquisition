@@ -1,0 +1,123 @@
+{
+  "checked_at": "2026-10-28T14:50:10.498709+08:00",
+  "group": 11,
+  "build": "D:\\111.wenjian\\5.fpgatest2\\work\\timing_closure_1\\build_4",
+  "STA": {
+    "wns_ns": 0.041,
+    "tns_ns": 0.0,
+    "setup_failing": 0,
+    "setup_total": 100069,
+    "whs_ns": 0.048,
+    "ths_ns": 0.0,
+    "hold_failing": 0,
+    "hold_total": 97478,
+    "wpws_ns": 2.0,
+    "tpws_ns": 0.0,
+    "pulse_failing": 0,
+    "pulse_total": 37275
+  },
+  "all_internal_setup_hold_and_pulse_constraints_met": true,
+  "check_timing": {
+    "no_clock": 0,
+    "constant_clock": 0,
+    "pulse_width_clock": 0,
+    "unconstrained_internal_endpoints": 0,
+    "no_input_delay": 9,
+    "no_output_delay": 18,
+    "multiple_clock": 0,
+    "generated_clocks": 0,
+    "loops": 0,
+    "partial_input_delay": 0,
+    "partial_output_delay": 0,
+    "latch_loops": 0
+  },
+  "bus_skew": {
+    "met_groups": 39,
+    "violated_groups": 0,
+    "minimum_slack_ns": 6.086,
+    "raw_classified_groups": 39
+  },
+  "ignored_exceptions_zero": true,
+  "frozen_source_count": 142,
+  "missing_required_frozen_sources": [],
+  "source_differences": [
+    "la32r_soc/fpga/project/Loongson_Soc.xpr"
+  ],
+  "unexpected_frozen_source_changes": [],
+  "project_delta_review": {
+    "needed": true,
+    "passed": true,
+    "reference_sha256": "9b20e569e3e65af099008c77190ee350f1947a93e77380fcccbb7e23811092b3",
+    "live_sha256": "6359b17088ba35c060cc008418e9f08c8e573a2563ccde57b474b01de6d2eb41",
+    "allowed_changes": [
+      "impl_1/post_route_phys_opt_design EnableStepBool=1 removed"
+    ]
+  },
+  "old_numbered_archive_changes": [],
+  "C_same_as_main8": true,
+  "main_sha256": "c913bffac624c9c8b5650b859eaba9d9398b05d67c59481783ef04e5409a9caa",
+  "MIF_sha256": "309559c2cc983532cadc9679bc9bde250181c7df266b6222b31c1a5c50391e55",
+  "PTP_same_as_original": true,
+  "artifact_hashes": {
+    "soc": "751ea1235d921d532d6573b91e925e10ae0f7c9c4da3e665ea6f0d39d4e93c55",
+    "main": "c913bffac624c9c8b5650b859eaba9d9398b05d67c59481783ef04e5409a9caa",
+    "ptp": "a169adba15a54b3c66e06c7e931c89a5e3a98245fc4174a152441523bc9eecf8"
+  },
+  "component_checks": {
+    "checks": {
+      "checksum": true,
+      "FIFO": true,
+      "CDC_simulations": true,
+      "CDC_scope": true,
+      "misc_functional_positive_logs": true,
+      "misc_expected_negative_control": true,
+      "misc_CDC": true,
+      "scheduler": true,
+      "integration": true,
+      "PHY_simulation_log_binding": true,
+      "PHY_candidate": true,
+      "native_entry": true,
+      "preservation": true
+    },
+    "failed": []
+  },
+  "component_evidence": {
+    "checksum/verification.json": "c7690ded65b5849622264d54812f22d6126067c28b7c95e4df50a5e06f53ace0",
+    "fifo/verification.json": "a76202ce39e75f1788ff2f5d3a269f4341055d924249ab1b9d9c66adfc4f0333",
+    "cdc/verification.json": "e73270d20f0f2db3fbd9e83e097a0efce6204945c2ce2e5f0c713405e0316b0d",
+    "cdc/next_round/verification.json": "fe60882bbddcb5d9626bd70ef4441692d5b87b428f23ff003b5355ab3522739c",
+    "scheduler/armed_cut/verification.json": "872d785ca0d233db339a7cc82955a767e9ddddc9ff8bfcb1c5e862b228cc057a",
+    "integration/armed_candidate/verification.json": "09eb7efbd3e3baeba59179b6dc374d3a3e30b1b03d7eb0146b5e757b392f7263",
+    "cdc/round3_review/phy_candidate/verification.json": "2646bbb48f3871efdb2c4e423b9bb400f604ddb9fd9923577c81d843dd17688c",
+    "cdc/round4_review/verification.json": "52deb3bd17fa95e98a88ee5312db5abdf505dda06f55e0e7374c67d773791746",
+    "preservation_verification.json": "ece96131426706be53aa33a659cf3cf2ccfd1000c3835da7aca06087b590d3a2"
+  },
+  "missing_evidence": [],
+  "board_programmed_by_this_task": false,
+  "independent_physical_accuracy_validated": false,
+  "known_unfixed_single_pulse_FIFO_clear": "integration/clear_pulse_issue/verification.json",
+  "known_baseline_PHY_TB_blockage": "integration/verification.json",
+  "known_negative_controls_are_not_normal_failures": true,
+  "board_IO_limits": "External IO PHY min/max/PCB skew and actual internal delay remain outside this static-ready scope",
+  "checks": {
+    "STA": true,
+    "ignored_exceptions": true,
+    "bus_skew": true,
+    "sources": true,
+    "old_archives": true,
+    "component_results": true,
+    "C_same_as_main8": true,
+    "MIF_expected": true,
+    "no_clock": true,
+    "unconstrained_internal_endpoints": true,
+    "loops": true,
+    "DRC_report": true,
+    "SOC_archive_SHA": true,
+    "SOC_part": true,
+    "main_archive_active": true,
+    "PTP_original": true,
+    "archive_timing_matches": true
+  },
+  "failed_checks": [],
+  "static_candidate_ready_for_board_test": true
+}
